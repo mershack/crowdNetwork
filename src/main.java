@@ -8,8 +8,8 @@ import javax.swing.JFrame;
 
 import brain.BrainDataFactory;
 import brain.BrainViewerFactory;
+import graphEvaluation.GraphUserStudyViewerFactory;
 
-import perspectives.*;
 import perspectives.base.Environment;
 import perspectives.graph.BundledGraphFactory;
 import perspectives.graph.GraphDataFactory;
@@ -42,8 +42,9 @@ public class main {
 	      e.registerViewerFactory(new BrainViewerFactory());
 //	      
 	      e.registerViewerFactory(new PerformanceViewerFactory());
+              e.registerViewerFactory(new GraphUserStudyViewerFactory());
 	      
-	      e.addViewer(new PerformanceTester("g"));
+	      //e.addViewer(new PerformanceTester("g"));
 	      
 	    //  e.registerDataSourceFactory(new NameDataFactory());
 	    //  e.registerViewerFactory(new NameViewerFactory()); 

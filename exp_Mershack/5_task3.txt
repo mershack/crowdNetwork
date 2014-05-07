@@ -1,0 +1,5 @@
+#type=2
+#duration=120000
+#alert-duration=10000
+#selection-ratio=0.75
+#start-with-gaze-correction=N

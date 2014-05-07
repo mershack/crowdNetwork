@@ -1,0 +1,6 @@
+1. task 1 - ET
+2. task 2 - No ET
+3. Task 1 - No ET
+4. Task 2 - ET
+5. Task 3 - GC
+6. Task 3 - No GC

@@ -1,0 +1,4 @@
+PDouble,Simulation.SPRING_LENGTH,15000.0
+PDouble,Simulation.SPRING_LENGTH,50.0
+PDouble,Simulation.SPRING_LENGTH,150.0
+PDouble,Simulation.SPRING_LENGTH,500.0

@@ -20,7 +20,7 @@ import perspectives.base.PropertyType;
 public abstract class DataSource extends PropertyManager implements Serializable
 {
 	EventManager em;
-	
+	protected String filePath = "";
 	public DataSource(String name)
 	{
 		super(name);
@@ -30,6 +30,10 @@ public abstract class DataSource extends PropertyManager implements Serializable
 		
                 lastUpdate = new Date().getTime();
 	}
+        
+        public String getFilePath(){
+            return filePath;
+        }
 	
 	
 	protected boolean loaded;

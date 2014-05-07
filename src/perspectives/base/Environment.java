@@ -232,6 +232,11 @@ public class Environment extends PropertyManagerGroup implements Serializable{
 						return new PTextWidget(p);
 				}});
 		
+                                this.registerNewType(new PButton(), new PropertyWidgetFactory() {
+					public PropertyWidget createWidget(Property p) {
+						return new PButtonWidget(p);
+				}});
+                                
 		final Environment ev = this;
 		Timer unresponsive = new Timer(1000, new ActionListener()
 		{
@@ -394,10 +399,80 @@ public class Environment extends PropertyManagerGroup implements Serializable{
 	    		   createNewData();			    		        
 			      }			      
 	       });	
+                   
+                       /***added for Evaluation button **/    
+               JButton evalButton = new JButton("Evaluate");		       
+	       //helpButton.setIcon(helpIcon);
+	         evalButton.setBounds(165,10,100,25);	     
+		   viewerArea.add(evalButton);
+		   evalButton.setVisible(true);   
+		   evalButton.setToolTipText("Evaluation");
+	     
+		   evalButton.addActionListener(new ActionListener() {	    	   
+	    	   public void actionPerformed(ActionEvent e) {
+	    		   createNewGraphEvaluation();			    		        
+			      }			      
+	       });	
+                   
 	       
 	       allPanel.revalidate();       
                  
 	}
+        
+        
+         /**Create a new graph Evaluation */
+       public void createNewGraphEvaluation(){
+           //add the evaluation
+           GraphEvaluation gEv = new GraphEvaluation("Graph Evaluation", this);
+           
+          final JInternalFrame dataFrame = new JInternalFrame(gEv.getName());
+            dataFrame.setFrameIcon(dataIcon);
+            dataFrame.setBorder(BorderFactory.createLineBorder(new Color(180,180,250)));
+            dataFrame.setBounds(newDataX,newDataY,200,400);
+            dataFrame.setVisible(true);
+            dataFrame.setClosable(true);
+            dataFrame.setIconifiable(true);
+            viewerArea.add(dataFrame);	
+		
+		
+		newDataY += 30;
+		newDataX += 10;
+		
+		viewerArea.setComponentZOrder(dataFrame, 0);	
+		
+                
+		viewerArea.setComponentZOrder(dataFrame, 0);
+		
+		PropertyManagerViewer pmv = new PropertyManagerViewer(gEv);
+                PropertyManagerChangeListener pmcl = new PropertyManagerChangeListener()
+		{
+			public void propertyValueChanges(PropertyManager pm, Property p, PropertyType newValue) {	}		
+			public void propertyReadonlyChanges(PropertyManager pm, Property p, boolean newReadOnly) {		}
+			public void propertyVisibleChanges(PropertyManager pm, Property p, boolean newVisible) {		}
+			public void propertyPublicChanges(PropertyManager pm, Property p, boolean newPublic) {		}
+			public void propertyDisabledChanges(PropertyManager pm, Property p, boolean enabled) {			}
+			public void propertyProperyManagerChanges(PropertyManager pm, Property p, PropertyManager newpm) {	}
+
+			public void propertyAdded(PropertyManager pm, Property p) {	
+				dataFrame.pack();	
+			}
+
+			@Override
+			public void propertyRemoved(PropertyManager pm, Property p) {
+				dataFrame.pack();			
+			}
+			
+		};
+		gEv.addChangeListener(pmcl);
+                
+                
+		dataFrame.add(pmv);		
+		dataFrame.pack();
+           
+       }	
+       /*************************/
+        
+        
 	
 	public String getLocalDataPath()
 	{

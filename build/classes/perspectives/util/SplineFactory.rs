@@ -1,0 +1,5 @@
+perspectives.util.Spline
+perspectives.util.CubicSpline
+perspectives.util.BezierSpline
+perspectives.util.SplineFactory
+perspectives.util.CatmullRomSpline

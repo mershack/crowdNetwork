@@ -63,7 +63,7 @@ public class PStringWidget extends PropertyWidget {
 	public void propertyReadonlyUpdated(boolean r) {
 		if (control != null)
 		{
-			if (r)
+			/*if (r)
 			{
 				this.remove(control);					
 				this.add(readOnlyControl,2);
@@ -72,7 +72,9 @@ public class PStringWidget extends PropertyWidget {
 			{
 				this.remove(readOnlyControl);					
 				this.add(control,2);
-			}
+			}*/
+                    
+                    control.setEnabled(!r);
 		}		
 	}
 

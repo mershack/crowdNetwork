@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
-
 import javax.imageio.ImageIO;
 
 import perspectives.base.Property;
@@ -40,6 +39,7 @@ import perspectives.properties.PFileInput;
 import perspectives.properties.PFileOutput;
 import perspectives.base.PropertyType;
 import perspectives.base.Animation;
+import perspectives.base.DataSource;
 import perspectives.util.BubbleSets;
 import perspectives.util.Label;
 import perspectives.util.Oval;
@@ -56,166 +56,195 @@ public class GraphViewer extends Viewer2D {
     int[] edgeTargets;
     ObjectInteraction ovalInteraction;
     protected ArrayList<Rectangle> ovals;
-    Task initTask;
+    protected Task initTask;
+    String dataFilePath = "";
+    boolean firstOutputUpdate = true;
+    Color nodeColor = Color.blue;
+    String dataSourceName;
+
+    public void updatePropertiesOutputFile(String type, String name, String value) {
+        String fileName = this.getName();
+        File outputFile = new File(fileName + ".txt");
+
+        try {
+            if (firstOutputUpdate) {
+            //delete the file if it exists and write the value to it
+
+                if (outputFile.exists()) {
+                    outputFile.delete();
+                }               
+                
+                //create new File
+                outputFile.createNewFile();
+                
+                firstOutputUpdate = false;
+            }
+            
+            FileWriter fileWritter = new FileWriter(outputFile.getName(),true);
+    	    BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+    	    bufferWritter.write(type + ","+name+","+value+"\n");
+    	    bufferWritter.close();
+            
+            
+           
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public String getDataFilePath() {
+        return dataFilePath;
+    }
+    
+   public String getDataSourceName(){
+       return dataSourceName;
+   }
 
     public GraphViewer(String name, GraphData g) {
         super(name);
 
         graph = g.graph;
-
+        dataSourceName = g.getName();
+        dataFilePath = g.getFilePath();
         final GraphViewer gv = this;
 
- 
         try {
 
-        	Property<PFileInput> p1 = new Property<PFileInput>("Load Positions", new PFileInput())
-            		{                    	
-            			@Override
-            			public boolean updating(PFileInput newvalue)
-            			{
-            				loadPositions(newvalue.path);
-            				return true;
-            			}                    			
-            		};
+            Property<PFileInput> p1 = new Property<PFileInput>("Load Positions", new PFileInput()) {
+                @Override
+                public boolean updating(PFileInput newvalue) {
+                    loadPositions(newvalue.path);
+                    return true;
+                }
+            };
             gv.addProperty(p1);
-           
-            
-          
-            Property<PDouble> p2 = new Property<PDouble>("Simulation.SPRING_LENGTH", new PDouble(300.))
-            		{
-            			@Override
-            			public boolean updating(PDouble newvalue)
-            			{
-            				((BarnesHutGraphDrawer) drawer).setSpringLength(newvalue.doubleValue());
-            				return true;
-            			}  
-            		};
-            gv.addProperty(p2);
-           
-            
 
-            Property<PDouble> p3 = new Property<PDouble>("Simulation.MAX_STEP", new PDouble(100.))
-            		{
-            			@Override
-            			public boolean updating(PDouble newvalue)
-            			{
-            				((BarnesHutGraphDrawer) drawer).max_step = newvalue.doubleValue();
-            				return true;
-            			} 
-            		};
+            Property<PDouble> p2 = new Property<PDouble>("Simulation.SPRING_LENGTH", new PDouble(300.)) {
+                @Override
+                public boolean updating(PDouble newvalue) {
+                    
+                    updatePropertiesOutputFile("PDouble", "Simulation.SPRING_LENGTH", newvalue.doubleValue()+""  );
+                    
+                    
+                    ((BarnesHutGraphDrawer) drawer).setSpringLength(newvalue.doubleValue());
+                    return true;
+                }
+            };
+            gv.addProperty(p2);
+
+            Property<PDouble> p3 = new Property<PDouble>("Simulation.MAX_STEP", new PDouble(100.)) {
+                @Override
+                public boolean updating(PDouble newvalue) {
+                     updatePropertiesOutputFile("PDouble", "Simulation.SPRING_LENGTH", newvalue.doubleValue()+""  );
+                    ((BarnesHutGraphDrawer) drawer).max_step = newvalue.doubleValue();
+                    return true;
+                }
+            };
 
             gv.addProperty(p3);
 
-            Property<PBoolean> p4 = new Property<PBoolean>("Simulation.Simulate", new PBoolean(false))
-            		{
-            			public boolean updating(PBoolean newvalue)
-            			{
-            				//System.out.println("simulation.simulate " + newvalue.boolValue());
-            				  if (newvalue.boolValue())
-            		                gv.startSimulation(50);
-            		          else
-            		                gv.stopSimulation();
-            				  return true;
-            		           
-            			}
-            		};
+            Property<PBoolean> p4 = new Property<PBoolean>("Simulation.Simulate", new PBoolean(false)) {
+                public boolean updating(PBoolean newvalue) {
+                    //System.out.println("simulation.simulate " + newvalue.boolValue());
+                    if (newvalue.boolValue()) {
+                        gv.startSimulation(50);
+                    } else {
+                        gv.stopSimulation();
+                    }
+                    return true;
+
+                }
+            };
             gv.addProperty(p4);
 
-            Property<PFileOutput> p5 = new Property<PFileOutput>("Save", new PFileOutput())
-            		{
-            	
-            		};
+            Property<PFileOutput> p5 = new Property<PFileOutput>("Save", new PFileOutput()) {
+
+            };
             gv.addProperty(p5);
 
-            PFileOutput f = new PFileOutput();                   
-            Property<PFileOutput> p6 = new Property<PFileOutput>("Save Positions", f)
-            		{
-            			@Override
-            			public boolean updating(PFileOutput newvalue)
-            			{
-            				savePositions(newvalue.path);
-            				return true;
-            			}  
-            		};
+            PFileOutput f = new PFileOutput();
+            Property<PFileOutput> p6 = new Property<PFileOutput>("Save Positions", f) {
+                @Override
+                public boolean updating(PFileOutput newvalue) {
+                    savePositions(newvalue.path);
+                    return true;
+                }
+            };
             gv.addProperty(p6);
 
-            Property<PInteger> p7 = new Property<PInteger>("Appearance.Node Size", new PInteger(22))
-            		{
-            			@Override
-            			 public boolean updating(PInteger newvalue)
-            			 {
-            		            int s = newvalue.intValue();
-            		            for (int i = 0; i < ovals.size(); i++) {
-            		                ovals.get(i).h = s;
-            		                ovals.get(i).w = s;
-            		            }
-            		            gv.requestRender();
-            		            return true;
-            			 }
-            			 
-							@Override
-							protected void receivedBroadcast(PInteger newvalue, PropertyManager sender) {
-					            this.setValue(newvalue); 									
-							}
-            		};
+            Property<PInteger> p7 = new Property<PInteger>("Appearance.Node Size", new PInteger(22)) {
+                @Override
+                public boolean updating(PInteger newvalue) {
+                    int s = newvalue.intValue();
+                    for (int i = 0; i < ovals.size(); i++) {
+                        ovals.get(i).h = s;
+                        ovals.get(i).w = s;
+                    }
+                    gv.requestRender();
+                    return true;
+                }
+
+                @Override
+                protected void receivedBroadcast(PInteger newvalue, PropertyManager sender) {
+                    this.setValue(newvalue);
+                }
+            };
             p7.setPublic(true);
             addProperty(p7);
-            
-            Property<PColor> p8 = new Property<PColor>("Appearance.Node Color", new PColor(Color.blue))
-            		{
-						@Override
-						protected void receivedBroadcast(PColor newvalue, PropertyManager sender) {
-							this.setValue(newvalue);
-							
-						}
-						@Override
-						public boolean updating(PColor newvalue)
-						{
-							gv.requestRender();
-							return true;
-						}
-            	
-            		};
+
+            Property<PColor> p8 = new Property<PColor>("Appearance.Node Color", new PColor(Color.blue)) {
+               
+               @Override
+                protected void receivedBroadcast(PColor newvalue, PropertyManager sender) {
+                    this.setValue(newvalue);
+
+                }
+
+                @Override
+                public boolean updating(PColor newvalue) {
+                    nodeColor = ((PColor)newvalue).colorValue();
+                    gv.requestRender();
+                    return true;
+                }
+
+            };
             p8.setPublic(true);
             addProperty(p8);
-            
-            
-            Property<PString> p99 = new Property<PString>("Selected", new PString(""))
-            		{
 
-						@Override
-						protected boolean updating(PString newvalue) {
-							
-							//System.out.println("selecting a node " + newvalue);
-							ArrayList<String> nodes = graph.getNodes();
-							int index = nodes.indexOf(newvalue.stringValue());
-							ovalInteraction.getItem(index).selected = true;
-							return true;
-						}
-            	
-            		};
+            Property<PString> p99 = new Property<PString>("Selected", new PString("")) {
+
+                @Override
+                protected boolean updating(PString newvalue) {
+
+                    //System.out.println("selecting a node " + newvalue);
+                    ArrayList<String> nodes = graph.getNodes();
+                    int index = nodes.indexOf(newvalue.stringValue());
+                    ovalInteraction.getItem(index).selected = true;
+                    return true;
+                }
+
+            };
             gv.addProperty(p99);
             p99.setPublic(true);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        
-        
+
         initTask = new Task("Initializing") {
-        	
+
             public void task() {
                 ovals = new ArrayList<Rectangle>();
                 ovalInteraction = new ObjectInteraction() {
                     @Override
                     protected void mouseIn(int obj) {
-                       gv.setTooltipContent(obj);
-                       // System.out.println(" ----- scheduling node animation");
+                        gv.setTooltipContent(obj);
+                        // System.out.println(" ----- scheduling node animation");
                         final int o = obj;
                         gv.createAnimation(new Animation.IntegerAnimation(22, 30, 500) {
                             public void step(int v) {
-                            //	System.out.println(" ----- node animation step + " + v);
+                                //	System.out.println(" ----- node animation step + " + v);
                                 Rectangle l = ((RectangleItem) ovalInteraction.getItem(o)).r;
                                 l.w = v;
                                 l.h = v;
@@ -253,7 +282,6 @@ public class GraphViewer extends Viewer2D {
                     }
                 };
 
-
                 ArrayList<String> nodes = graph.getNodes();
                 for (int i = 0; i < nodes.size(); i++) {
                     Oval o = new Oval(0, 0, 22, 22);
@@ -276,7 +304,7 @@ public class GraphViewer extends Viewer2D {
                 ((BarnesHutGraphDrawer) drawer).setSpringLength(300.);
                 ((BarnesHutGraphDrawer) drawer).max_step = 200.;
 
-                 done();
+                done();
                 requestRender();
             }
         };
@@ -288,8 +316,8 @@ public class GraphViewer extends Viewer2D {
     }
 
     public void simulate() {
-    	
-    	System.out.println("simulate");
+
+        System.out.println("simulate");
 
         if (!initTask.done) {
             return;
@@ -306,11 +334,10 @@ public class GraphViewer extends Viewer2D {
         this.requestRender();
     }
 
-  
- 
     ArrayList<Integer> pairs1 = new ArrayList<Integer>();
     ArrayList<Integer> pairs2 = new ArrayList<Integer>();
 
+   @Override
     public void render(Graphics2D g) {
         if (!initTask.done) {
             return;
@@ -321,8 +348,8 @@ public class GraphViewer extends Viewer2D {
         ArrayList<String> nodes = graph.getNodes();
         boolean[] hov = new boolean[nodes.size()];
         boolean[] sel = new boolean[nodes.size()];
-        
-        Color nodeColor = ((PColor)(getProperty("Appearance.Node Color").getValue())).colorValue();
+
+     //   Color nodeColor = ((PColor) (getProperty("Appearance.Node Color").getValue())).colorValue();
 
         ArrayList<Integer> selindex = new ArrayList<Integer>();
         for (int i = 0; i < nodes.size(); i++) {
@@ -343,8 +370,6 @@ public class GraphViewer extends Viewer2D {
 
         this.renderNodes(g, sel, hov);
 
-
-
         long t2 = new Date().getTime();
 
         renderEdges(g, sel, hov);
@@ -352,7 +377,6 @@ public class GraphViewer extends Viewer2D {
         long t3 = new Date().getTime();
 
         //	System.out.println("render times " + (t2-t1) + " " + (t3-t2));
-
         if (selindex.size() == 2) {
             boolean found = false;
             for (int i = 0; i < pairs1.size(); i++) {
@@ -396,16 +420,16 @@ public class GraphViewer extends Viewer2D {
             int index1 = e1.get(i);
             int index2 = e2.get(i);
 
-
             renderEdge(index1, index2, i, sel[index1] || sel[index2], hov[index1] || hov[index2], g);
-
 
         }
     }
+
     protected void setTooltipContent(int index) {
-		// TODO Auto-generated method stub
-		this.setToolTipText(""+index);
-	}
+        // TODO Auto-generated method stub
+        this.setToolTipText("" + index);
+    }
+
     public void renderEdge(int p1, int p2, int edgeIndex, boolean selected, boolean hovered, Graphics2D g) {
         int x1 = (int) drawer.getX(p1);
         int y1 = (int) drawer.getY(p1);
@@ -421,7 +445,6 @@ public class GraphViewer extends Viewer2D {
         }
 
        // g.setColor(new Color(150, 150, 150, 200));
-
         g.setStroke(new BasicStroke(2));
 
         g.drawLine(x1, y1, x2, y2);
@@ -459,7 +482,7 @@ public class GraphViewer extends Viewer2D {
 
     @Override
     public void keyPressed(String key, String mod) {
-    	System.out.println("graph viewer keypress: " + key + " , " + mod);
+        System.out.println("graph viewer keypress: " + key + " , " + mod);
         ovalInteraction.ctrlPress();
         // TODO Auto-generated method stub
         super.keyPressed(key, mod);
@@ -471,10 +494,8 @@ public class GraphViewer extends Viewer2D {
         // TODO Auto-generated method stub
         super.keyReleased(key, mod);
     }
-    
-    
-    public void loadPositions(String path)
-    {
+
+    public void loadPositions(String path) {
         ArrayList<String> nodes = graph.getNodes();
 
         try {
@@ -512,7 +533,6 @@ public class GraphViewer extends Viewer2D {
 
                 //x = x*1.335;
                 //y = -y*1.335;
-
                 if (drawer != null) {
                     drawer.setX(index, (int) (x));
                     drawer.setY(index, (int) (y));
@@ -529,9 +549,8 @@ public class GraphViewer extends Viewer2D {
         }
 
     }
-    
-    public void savePositions(String path)
-    {
+
+    public void savePositions(String path) {
         ArrayList<String> nodes = graph.getNodes();
         try {
             FileWriter fstream;
@@ -547,20 +566,17 @@ public class GraphViewer extends Viewer2D {
 
             br.close();
 
-
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-    
-    
+
     public void save(File f) {
         ArrayList<String> nodes = graph.getNodes();
         for (int i = 0; i < nodes.size(); i++) {
             int x = (int) drawer.getX(i);
             int y = (int) drawer.getY(i);
-
 
             Property<PInteger> px = graph.nodeProperty(nodes.get(i), "x");
             if (px == null) {
@@ -600,17 +616,15 @@ public class GraphViewer extends Viewer2D {
             }
         }
     }
-    
-    public int[] getNodeCoordinates(int index)
-    {
-    	return new int[]{(int)drawer.getX(index), (int)drawer.getY(index)};
+
+    public int[] getNodeCoordinates(int index) {
+        return new int[]{(int) drawer.getX(index), (int) drawer.getY(index)};
     }
-    
-    public void setNodeCoordinates(int index, int x, int y)
-    {
-    	drawer.setX(index, x);
-    	drawer.setY(index, y);
-    	ovals.get(index).x = x;
-    	ovals.get(index).y = y;
+
+    public void setNodeCoordinates(int index, int x, int y) {
+        drawer.setX(index, x);
+        drawer.setY(index, y);
+        ovals.get(index).x = x;
+        ovals.get(index).y = y;
     }
 }
