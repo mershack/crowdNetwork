@@ -1,0 +1,2 @@
+PInteger,Appearance.Node Size,50
+PColor,Appearance.Node Color,0-255-0-255

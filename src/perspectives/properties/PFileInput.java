@@ -39,8 +39,9 @@ public class PFileInput  extends PropertyType{
 	@Override
 	public String serialize() {
 		// TODO Auto-generated method stub
-		return "true";
-            //return null;
+            return path;
+            //return "true";
+            
 	}
 	@Override
 	public PFileInput deserialize(String s) {

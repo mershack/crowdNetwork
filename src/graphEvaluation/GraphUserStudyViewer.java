@@ -63,6 +63,7 @@ public class GraphUserStudyViewer extends GraphViewer {
     ArrayList<Integer> pointB;
     //final String TASKFILE = "tasks.txt";
     final String TASKFILE = "tasks2.txt";
+    final String PROP_CHG_FILE = "viewer1.txt";
 
     int testCounter = 0;
     String answer;
@@ -71,28 +72,12 @@ public class GraphUserStudyViewer extends GraphViewer {
      Property<PText> ptask;
     ArrayList<GraphTask> allTasks = new ArrayList<GraphTask>();
 
-    /////////////////////////        user study stuff      ///////////////////////////////////////
-    int mistakes = 0;
-    int currentuse = 0;
-
-    ArrayList<Boolean> useanswers;
-    ArrayList<ArrayList<Integer>> useAnswersPath;
-
+   
     int showedNode1, showedNode2;
-    long ustime = 0;
-    boolean withEyeTracking = true;
-    boolean withGazeCorrection = true;
-    long exptime = 0;
-
-    long tdecay;
-    long tadd;
-    long tcompbar;
-
-    int lag;
-
-    private UserStudyUtility userStudy;
-
+   
     boolean firstRender = true;
+    boolean secondRender = true;
+    int cnt = 0;
     int testNodeA = -1;
     int testNodeB = -1;
     Color testNodeColor = Color.red;
@@ -104,17 +89,9 @@ public class GraphUserStudyViewer extends GraphViewer {
     public GraphUserStudyViewer(String name, GraphData g) {
 
         super(name, g);
-
-        //removing the existing properties that were added in the GraphViewer
-        this.removeProperty("Load Positions");
-        this.removeProperty("Simulation.SPRING_LENGTH");
-        this.removeProperty("Simulation.MAX_STEP");
-        this.removeProperty("Simulation.Simulate");
-        this.removeProperty("Save");
-        this.removeProperty("Save Positions");
-        this.removeProperty("Appearance.Node Size");
-        this.removeProperty("Appearance.Node Color");
-        this.removeProperty("Selected");
+        //readPropChangesFileAndUpdate();
+        
+        
 
         Property<PButton> pstart = new Property<PButton>("Start", new PButton()) {
             @Override
@@ -127,7 +104,53 @@ public class GraphUserStudyViewer extends GraphViewer {
 
         loadTasks();
     }
+    
+    public void readPropChangesFileAndUpdate(){
+        try{
+             // loadPositions("pos5.txt");
+            //this.requestRender();
+            BufferedReader br = new BufferedReader(new FileReader(new File(PROP_CHG_FILE)));
+            String line = " ";
+            String split[];
+            
+            Property prop = null;
+            PropertyType propValue = null;
+           while ((line = br.readLine()) != null) {
+               
+               split = line.split(",");
+               //NB: each line in the file is of the format PropertyType, PropertyName, PropertyValue
+               //E.g: PInteger,Appearance.Node Size,50
+              prop = this.getProperty(split[1]);
+               propValue = this.deserialize(split[0], split[2]);
+               if(prop!=null){
+                   //set the new value given from the file
+                   this.getProperty(split[1]).setValue(propValue);                   
+               }
+               
+               //remove default graph properties.
+             // this.requestRender();
+            }
+            
+            removeDefaultGraphProps();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
+    public void removeDefaultGraphProps(){
+       //this.getProperty("Load Positions").setVisible(false);
+       this.removeProperty("Load Positions");
+        this.removeProperty("Simulation.SPRING_LENGTH");
+        this.removeProperty("Simulation.MAX_STEP");
+        this.removeProperty("Simulation.Simulate");
+        this.removeProperty("Save");
+        this.removeProperty("Save Positions");
+        this.removeProperty("Appearance.Node Size");
+        this.removeProperty("Appearance.Node Color");
+        this.removeProperty("Selected");
+        
+    }
+    
     public void startStudy() {
 
         //remove the start button property
@@ -190,10 +213,11 @@ public class GraphUserStudyViewer extends GraphViewer {
             return;
         }
         if (firstRender) {  //Load the positions of the file here, and set other properties the developer specified
-            loadPositions("pos5.txt");
-            firstRender = false;
+            readPropChangesFileAndUpdate();
+            firstRender = false;         
         }
         super.render(g);
+       
     }
 
     public void advanceStudy() {
@@ -290,11 +314,24 @@ public class GraphUserStudyViewer extends GraphViewer {
     @Override
     public void renderNode(int i, boolean selected, boolean hovered, Graphics2D g) {
         if ((i == testNodeA) || (i == testNodeB)) { //if the node is part of the two nodes of the study          
-            ovals.get(i).setColor(testNodeColor);
+            ovals.get(i).setColor(testNodeColor);   
+            ovals.get(i).render(g);
         } else {
-            ovals.get(i).setColor(OtherNodesColor);
+            super.renderNode(i, selected, hovered, g);
+//              if (selected) {
+//            ovals.get(i).setColor(Color.red);
+//        } else if (hovered) {
+//            ovals.get(i).setColor(Color.pink);
         }
-        ovals.get(i).render(g);
+//        }
+//
+//            
+//            
+//            
+//            //ovals.get(i).setColor(OtherNodesColor);
+//            ovals.get(i).setColor(nodeColor);
+//        }
+        
     }
 
     public void showUserStudy(int index1, int index2) {

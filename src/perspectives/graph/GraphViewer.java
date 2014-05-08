@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -59,8 +60,9 @@ public class GraphViewer extends Viewer2D {
     protected Task initTask;
     String dataFilePath = "";
     boolean firstOutputUpdate = true;
-    Color nodeColor = Color.blue;
+    protected Color nodeColor = Color.blue;
     String dataSourceName;
+    int nodeSize = 22;
 
     public void updatePropertiesOutputFile(String type, String name, String value) {
         String fileName = this.getName();
@@ -68,25 +70,29 @@ public class GraphViewer extends Viewer2D {
 
         try {
             if (firstOutputUpdate) {
-            //delete the file if it exists and write the value to it
+                //delete the file if it exists and write the value to it
 
                 if (outputFile.exists()) {
                     outputFile.delete();
-                }               
-                
+                }
+
                 //create new File
                 outputFile.createNewFile();
-                
+
                 firstOutputUpdate = false;
             }
-            
-            FileWriter fileWritter = new FileWriter(outputFile.getName(),true);
-    	    BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-    	    bufferWritter.write(type + ","+name+","+value+"\n");
-    	    bufferWritter.close();
-            
-            
-           
+
+            FileWriter fileWritter = new FileWriter(outputFile, true);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+
+            PrintWriter pw = new PrintWriter(bufferWritter);
+
+            pw.println(type + "," + name + "," + value);
+
+            pw.close();
+            // bufferWritter.write(+"\n");
+            //bufferWritter.close();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -96,10 +102,10 @@ public class GraphViewer extends Viewer2D {
     public String getDataFilePath() {
         return dataFilePath;
     }
-    
-   public String getDataSourceName(){
-       return dataSourceName;
-   }
+
+    public String getDataSourceName() {
+        return dataSourceName;
+    }
 
     public GraphViewer(String name, GraphData g) {
         super(name);
@@ -115,6 +121,8 @@ public class GraphViewer extends Viewer2D {
                 @Override
                 public boolean updating(PFileInput newvalue) {
                     loadPositions(newvalue.path);
+
+                    updatePropertiesOutputFile("PFileInput", "Load Positions", newvalue.serialize());
                     return true;
                 }
             };
@@ -123,11 +131,8 @@ public class GraphViewer extends Viewer2D {
             Property<PDouble> p2 = new Property<PDouble>("Simulation.SPRING_LENGTH", new PDouble(300.)) {
                 @Override
                 public boolean updating(PDouble newvalue) {
-                    
-                    updatePropertiesOutputFile("PDouble", "Simulation.SPRING_LENGTH", newvalue.doubleValue()+""  );
-                    
-                    
                     ((BarnesHutGraphDrawer) drawer).setSpringLength(newvalue.doubleValue());
+                    updatePropertiesOutputFile("PDouble", "Simulation.SPRING_LENGTH", newvalue.serialize());
                     return true;
                 }
             };
@@ -136,8 +141,8 @@ public class GraphViewer extends Viewer2D {
             Property<PDouble> p3 = new Property<PDouble>("Simulation.MAX_STEP", new PDouble(100.)) {
                 @Override
                 public boolean updating(PDouble newvalue) {
-                     updatePropertiesOutputFile("PDouble", "Simulation.SPRING_LENGTH", newvalue.doubleValue()+""  );
                     ((BarnesHutGraphDrawer) drawer).max_step = newvalue.doubleValue();
+                    updatePropertiesOutputFile("PDouble", "Simulation.SPRING_LENGTH", newvalue.serialize());
                     return true;
                 }
             };
@@ -146,14 +151,14 @@ public class GraphViewer extends Viewer2D {
 
             Property<PBoolean> p4 = new Property<PBoolean>("Simulation.Simulate", new PBoolean(false)) {
                 public boolean updating(PBoolean newvalue) {
-                    //System.out.println("simulation.simulate " + newvalue.boolValue());
                     if (newvalue.boolValue()) {
                         gv.startSimulation(50);
                     } else {
                         gv.stopSimulation();
                     }
-                    return true;
 
+                    updatePropertiesOutputFile("PBoolean", "Simulation.Simulate", newvalue.serialize());
+                    return true;
                 }
             };
             gv.addProperty(p4);
@@ -177,11 +182,17 @@ public class GraphViewer extends Viewer2D {
                 @Override
                 public boolean updating(PInteger newvalue) {
                     int s = newvalue.intValue();
+                    //setNodeSize(s);
+                    nodeSize = s;
+                    System.out.println("the size is " + s);
                     for (int i = 0; i < ovals.size(); i++) {
                         ovals.get(i).h = s;
                         ovals.get(i).w = s;
                     }
+                    System.out.println("finished resizing");
                     gv.requestRender();
+                    updatePropertiesOutputFile("PInteger", "Appearance.Node Size", newvalue.serialize());
+
                     return true;
                 }
 
@@ -194,8 +205,8 @@ public class GraphViewer extends Viewer2D {
             addProperty(p7);
 
             Property<PColor> p8 = new Property<PColor>("Appearance.Node Color", new PColor(Color.blue)) {
-               
-               @Override
+
+                @Override
                 protected void receivedBroadcast(PColor newvalue, PropertyManager sender) {
                     this.setValue(newvalue);
 
@@ -203,8 +214,10 @@ public class GraphViewer extends Viewer2D {
 
                 @Override
                 public boolean updating(PColor newvalue) {
-                    nodeColor = ((PColor)newvalue).colorValue();
+                    nodeColor = ((PColor) newvalue).colorValue();
                     gv.requestRender();
+
+                    updatePropertiesOutputFile("PColor", "Appearance.Node Color", newvalue.serialize());
                     return true;
                 }
 
@@ -242,7 +255,8 @@ public class GraphViewer extends Viewer2D {
                         gv.setTooltipContent(obj);
                         // System.out.println(" ----- scheduling node animation");
                         final int o = obj;
-                        gv.createAnimation(new Animation.IntegerAnimation(22, 30, 500) {
+                        //gv.createAnimation(new Animation.IntegerAnimation(22, 30, 500) {
+                       gv.createAnimation(new Animation.IntegerAnimation(nodeSize, nodeSize + 8, 500) {
                             public void step(int v) {
                                 //	System.out.println(" ----- node animation step + " + v);
                                 Rectangle l = ((RectangleItem) ovalInteraction.getItem(o)).r;
@@ -256,7 +270,8 @@ public class GraphViewer extends Viewer2D {
                     protected void mouseOut(int obj) {
                         gv.setToolTipText("");
                         final Rectangle l = ((RectangleItem) ovalInteraction.getItem(obj)).r;
-                        gv.createAnimation(new Animation.IntegerAnimation(30, 22, 300) {
+                       // gv.createAnimation(new Animation.IntegerAnimation(30, nodeSize, 300) {
+                        gv.createAnimation(new Animation.IntegerAnimation(nodeSize + 8, nodeSize, 300) {
                             public void step(int v) {
                                 l.w = v;
                                 l.h = v;
@@ -315,6 +330,16 @@ public class GraphViewer extends Viewer2D {
 
     }
 
+    public void resetOvalInteraction() {
+        ArrayList<String> nodes = graph.getNodes();
+
+        for (int i = 0; i < ovals.size(); i++) {
+                    //Oval o = new Oval(0, 0, 22, 22);
+            //ovals.add(o);
+            ovalInteraction.addItem(ovalInteraction.new RectangleItem(ovals.get(i)));
+        }
+    }
+
     public void simulate() {
 
         System.out.println("simulate");
@@ -337,7 +362,7 @@ public class GraphViewer extends Viewer2D {
     ArrayList<Integer> pairs1 = new ArrayList<Integer>();
     ArrayList<Integer> pairs2 = new ArrayList<Integer>();
 
-   @Override
+    @Override
     public void render(Graphics2D g) {
         if (!initTask.done) {
             return;
@@ -349,8 +374,7 @@ public class GraphViewer extends Viewer2D {
         boolean[] hov = new boolean[nodes.size()];
         boolean[] sel = new boolean[nodes.size()];
 
-     //   Color nodeColor = ((PColor) (getProperty("Appearance.Node Color").getValue())).colorValue();
-
+        //   Color nodeColor = ((PColor) (getProperty("Appearance.Node Color").getValue())).colorValue();
         ArrayList<Integer> selindex = new ArrayList<Integer>();
         for (int i = 0; i < nodes.size(); i++) {
             ObjectInteraction.VisualItem item = ovalInteraction.getItem(i);
@@ -444,7 +468,7 @@ public class GraphViewer extends Viewer2D {
             g.setColor(new Color(150, 150, 150, 200));
         }
 
-       // g.setColor(new Color(150, 150, 150, 200));
+        // g.setColor(new Color(150, 150, 150, 200));
         g.setStroke(new BasicStroke(2));
 
         g.drawLine(x1, y1, x2, y2);
@@ -545,6 +569,9 @@ public class GraphViewer extends Viewer2D {
             }
 
             in.close();
+
+            this.requestRender();
+
         } catch (Exception e) {
         }
 
