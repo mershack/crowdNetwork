@@ -63,18 +63,17 @@ public class GraphUserStudyViewer extends GraphViewer {
     ArrayList<Integer> pointB;
     //final String TASKFILE = "tasks.txt";
     final String TASKFILE = "tasks2.txt";
-    final String PROP_CHG_FILE = "viewer1.txt";
+    private String propChangesFile = "viewer11.txt";
 
     int testCounter = 0;
     String answer;
-     Property<PBoolean> panswer_no;
-     Property<PBoolean> panswer_yes ;
-     Property<PText> ptask;
+    Property<PBoolean> panswer_no;
+    Property<PBoolean> panswer_yes;
+    Property<PText> ptask;
     ArrayList<GraphTask> allTasks = new ArrayList<GraphTask>();
 
-   
     int showedNode1, showedNode2;
-   
+
     boolean firstRender = true;
     boolean secondRender = true;
     int cnt = 0;
@@ -90,8 +89,6 @@ public class GraphUserStudyViewer extends GraphViewer {
 
         super(name, g);
         //readPropChangesFileAndUpdate();
-        
-        
 
         Property<PButton> pstart = new Property<PButton>("Start", new PButton()) {
             @Override
@@ -104,42 +101,48 @@ public class GraphUserStudyViewer extends GraphViewer {
 
         loadTasks();
     }
-    
-    public void readPropChangesFileAndUpdate(){
-        try{
-             // loadPositions("pos5.txt");
-            //this.requestRender();
-            BufferedReader br = new BufferedReader(new FileReader(new File(PROP_CHG_FILE)));
-            String line = " ";
-            String split[];
-            
-            Property prop = null;
-            PropertyType propValue = null;
-           while ((line = br.readLine()) != null) {
-               
-               split = line.split(",");
-               //NB: each line in the file is of the format PropertyType, PropertyName, PropertyValue
-               //E.g: PInteger,Appearance.Node Size,50
-              prop = this.getProperty(split[1]);
-               propValue = this.deserialize(split[0], split[2]);
-               if(prop!=null){
-                   //set the new value given from the file
-                   this.getProperty(split[1]).setValue(propValue);                   
-               }
-               
-               //remove default graph properties.
-             // this.requestRender();
+
+    public void readPropChangesFileAndUpdate() {
+        try {
+
+            System.out.println("The file name is : "+ propChangesFile);
+            File propFile = new File(propChangesFile);
+
+            if (propFile.exists()) {//Do the property changes if the file exists
+
+                BufferedReader br = new BufferedReader(new FileReader(propFile));
+                String line = " ";
+                String split[];
+
+                Property prop = null;
+                PropertyType propValue = null;
+                while ((line = br.readLine()) != null) {
+
+                    split = line.split(",");
+                    //NB: each line in the file is of the format PropertyType, PropertyName, PropertyValue
+                    //E.g: PInteger,Appearance.Node Size,50
+                    prop = this.getProperty(split[1]);
+                    propValue = this.deserialize(split[0], split[2]);
+                    if (prop != null) {
+                        //set the new value given from the file
+                        this.getProperty(split[1]).setValue(propValue);
+                    }
+
+                    //remove default graph properties.
+                    // this.requestRender();
+                }
             }
             
             removeDefaultGraphProps();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void removeDefaultGraphProps(){
-       //this.getProperty("Load Positions").setVisible(false);
-       this.removeProperty("Load Positions");
+    public void removeDefaultGraphProps() {
+        //this.getProperty("Load Positions").setVisible(false);
+        this.removeProperty("Load Positions");
         this.removeProperty("Simulation.SPRING_LENGTH");
         this.removeProperty("Simulation.MAX_STEP");
         this.removeProperty("Simulation.Simulate");
@@ -148,16 +151,16 @@ public class GraphUserStudyViewer extends GraphViewer {
         this.removeProperty("Appearance.Node Size");
         this.removeProperty("Appearance.Node Color");
         this.removeProperty("Selected");
-        
+
     }
-    
+
     public void startStudy() {
 
         //remove the start button property
         this.removeProperty("Start");
-       
+
         addTestProperties();
-        advanceStudy();        
+        advanceStudy();
     }
 
     public void loadTasks() {
@@ -214,18 +217,18 @@ public class GraphUserStudyViewer extends GraphViewer {
         }
         if (firstRender) {  //Load the positions of the file here, and set other properties the developer specified
             readPropChangesFileAndUpdate();
-            firstRender = false;         
+            firstRender = false;
         }
         super.render(g);
-       
+
     }
 
     public void advanceStudy() {
         if (testCounter > 0) //first time
         {
-           // removeTestProperties();
-        }       
-         if (testCounter < pointA.size()) {
+            // removeTestProperties();
+        }
+        if (testCounter < pointA.size()) {
             testNodeA = pointA.get(testCounter);
             testNodeB = pointB.get(testCounter);//[testCounter];
             testCounter++;
@@ -233,95 +236,116 @@ public class GraphUserStudyViewer extends GraphViewer {
 
         }
     }
-    
-    public void addTestProperties(){
+
+    public void addTestProperties() {
         Property<PButton> pnext = new Property<PButton>("Advance.Next", new PButton()) {
-                @Override
-                public boolean updating(PButton newvalue) {                    
+            @Override
+            public boolean updating(PButton newvalue) {
+
+                if (testCounter < pointA.size()) { //increment the current task pointer if possible.
+
+                    //remove and add the qn and the qn status
+                    removeProperty("Task.Qn ");
+                    ptask_status = new Property<PString>("Task.Qn ", new PString("(" + (testCounter + 1) + "/" + pointA.size() + "): "));
+                    ptask_status.setReadOnly(true);
+                    addProperty(ptask_status);
+                    removeProperty("Task. ");
+                    ptask = new Property<PText>("Task. ", new PText(allTasks.get(testCounter).getQuestion()));
+                    ptask.setReadOnly(true);
+                    addProperty(ptask);
+
                     advanceStudy();
-                    
-                    if(testCounter<pointA.size()){ //increment the current task pointer if possible.
-                        //System.out.println("Yea!");
-                       ptask_status.setReadOnly(false);
-                        //ptask_status.setDisabled(true);
-                        ptask_status.setValue(new PString((testCounter+1)+ "/" + pointA.size()));
-                        //;
-                    }
-                    
-                    return true;
-                }
-            };
-            this.addProperty(pnext);
 
-            ptask_status = new Property<PString>("Advance.Current Qn: ", new PString((testCounter+1)+ "/" + pointA.size())) {
-                @Override
-                public boolean updating(PString newvalue) {
-                    this.setReadOnly(true);
-                    return true;
+//                        ptask_status.setReadOnly(false);
+//                        ptask_status.setValue(new PString(("("+(testCounter+1)+ "/" + pointA.size()+"): ")));
+//                       ptask.setReadOnly(false);
+//                        ptask.setValue(new PText(allTasks.get(testCounter).getQuestion()));
                 }
-            };
-            ptask_status.setReadOnly(true);
-            this.addProperty(ptask_status);
 
-            panswer_yes = new Property<PBoolean>("Answer.Yes", new PBoolean(false)){
-                @Override
-                public boolean updating(PBoolean newvalue){
-                     boolean ans = ((PBoolean)newvalue).boolValue();
-                   
-                   if (ans){
-                       panswer_no.setValue(new PBoolean(false));
-                       panswer_no.setReadOnly(true);
-                   }
-                   else{
-                       panswer_no.setReadOnly(false);
-                   }
-                    return true;
+                return true;
+            }
+        };
+        this.addProperty(pnext);
+
+        panswer_yes = new Property<PBoolean>("Answer.Yes", new PBoolean(false)) {
+            @Override
+            public boolean updating(PBoolean newvalue) {
+                boolean ans = ((PBoolean) newvalue).boolValue();
+
+                if (ans) {
+                    panswer_no.setValue(new PBoolean(false));
+                    panswer_no.setReadOnly(true);
+                } else {
+                    panswer_no.setReadOnly(false);
                 }
-            };
-            this.addProperty(panswer_yes);
+                return true;
+            }
+        };
+        this.addProperty(panswer_yes);
 
-            panswer_no = new Property<PBoolean>("Answer.No", new PBoolean(false)){
-                @Override
-                public boolean updating(PBoolean newvalue){
-                   boolean ans = ((PBoolean)newvalue).boolValue();
-                   
-                   if (ans){
-                       panswer_yes.setValue(new PBoolean(false));
-                       panswer_yes.setReadOnly(true);
-                   }
-                   else{
-                       panswer_yes.setReadOnly(false);
-                   }
-                    
-                    return true;
+        panswer_no = new Property<PBoolean>("Answer.No", new PBoolean(false)) {
+            @Override
+            public boolean updating(PBoolean newvalue) {
+                boolean ans = ((PBoolean) newvalue).boolValue();
+
+                if (ans) {
+                    panswer_yes.setValue(new PBoolean(false));
+                    panswer_yes.setReadOnly(true);
+                } else {
+                    panswer_yes.setReadOnly(false);
                 }
-            };
-            this.addProperty(panswer_no);
 
-            ptask = new Property<PText>("Task. ", new PText(allTasks.get(testCounter).getQuestion()));
-            this.addProperty(ptask);
+                return true;
+            }
+        };
+        this.addProperty(panswer_no);
+
+        ptask_status = new Property<PString>("Task.Qn ", new PString("(" + (testCounter + 1) + "/" + pointA.size() + "): ")) {
+            @Override
+            public boolean updating(PString newvalue) {
+                this.setReadOnly(true);
+                return true;
+            }
+        };
+
+        ptask_status.setReadOnly(true);
+        this.addProperty(ptask_status);
+
+        ptask = new Property<PText>("Task. ", new PText(allTasks.get(testCounter).getQuestion())) {
+            @Override
+            public boolean updating(PText newvalue) {
+                System.out.println("#Task: " + newvalue.serialize());
+                return true;
+            }
+        };
+        ptask.setReadOnly(true);
+        this.addProperty(ptask);
+
+    }
+
+    public void removeTestProperties() {
+        this.removeProperty("Advance.Next");
+        this.removeProperty("Advance.Current Qn: ");
+        this.removeProperty("Answer.Yes");
+        this.removeProperty("Answer.No");
+        this.removeProperty("Task. ");
+
+    }
+
+    public void setPropChangesFile(String propChangesFile) {
+        System.out.println("Yay!");
+        this.propChangesFile = propChangesFile;
     }
     
-    public void removeTestProperties(){
-       this.removeProperty("Advance.Next");
-       this.removeProperty("Advance.Current Qn: ");
-       this.removeProperty("Answer.Yes");
-       this.removeProperty("Answer.No");
-       this.removeProperty("Task. ");
-          
-    }
+    
 
     @Override
     public void renderNode(int i, boolean selected, boolean hovered, Graphics2D g) {
         if ((i == testNodeA) || (i == testNodeB)) { //if the node is part of the two nodes of the study          
-            ovals.get(i).setColor(testNodeColor);   
+            ovals.get(i).setColor(testNodeColor);
             ovals.get(i).render(g);
         } else {
             super.renderNode(i, selected, hovered, g);
-//              if (selected) {
-//            ovals.get(i).setColor(Color.red);
-//        } else if (hovered) {
-//            ovals.get(i).setColor(Color.pink);
         }
 //        }
 //
@@ -331,7 +355,7 @@ public class GraphUserStudyViewer extends GraphViewer {
 //            //ovals.get(i).setColor(OtherNodesColor);
 //            ovals.get(i).setColor(nodeColor);
 //        }
-        
+
     }
 
     public void showUserStudy(int index1, int index2) {
@@ -349,6 +373,6 @@ public class GraphUserStudyViewer extends GraphViewer {
 
         //translate();
         //exptime = new Date().getTime() + userStudy.taskDuration;
-    }   
+    }
 
 }//end class

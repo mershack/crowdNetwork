@@ -1,3 +1,4 @@
+import graphEvaluation.GraphUserStudyViewerFactory;
 import perspectives.base.Environment;
 import perspectives.graph.GraphData;
 import perspectives.graph.GraphDataFactory;
@@ -14,6 +15,7 @@ public class MyInitServlet extends InitServlet{
 			e.registerDataSourceFactory(new GraphDataFactory());
 			e.registerViewerFactory(new PerformanceViewerFactory());
 			e.registerViewerFactory(new GraphViewerFactory());
+                        e.registerViewerFactory(new GraphUserStudyViewerFactory());
 			
 			System.out.println("here");
 			GraphData d = new GraphData("graphdata");

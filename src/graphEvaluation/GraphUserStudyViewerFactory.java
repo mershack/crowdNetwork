@@ -22,8 +22,15 @@ public class GraphUserStudyViewerFactory extends ViewerFactory {
 
 		@Override
 		public Viewer create(String name) {
-			if (this.isAllDataPresent())
-				return new GraphUserStudyViewer(name, (GraphData)this.getData().get(0));
+			if (this.isAllDataPresent()){
+                            
+                            GraphUserStudyViewer gsv = new GraphUserStudyViewer(name, (GraphData)this.getData().get(0));
+                            
+                            
+                            //return new GraphUserStudyViewer(name, (GraphData)this.getData().get(0));
+                            return gsv;
+                        }
+				
 			return null;
 		}
 }

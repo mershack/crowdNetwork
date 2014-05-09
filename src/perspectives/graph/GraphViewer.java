@@ -184,12 +184,10 @@ public class GraphViewer extends Viewer2D {
                     int s = newvalue.intValue();
                     //setNodeSize(s);
                     nodeSize = s;
-                    System.out.println("the size is " + s);
                     for (int i = 0; i < ovals.size(); i++) {
                         ovals.get(i).h = s;
                         ovals.get(i).w = s;
                     }
-                    System.out.println("finished resizing");
                     gv.requestRender();
                     updatePropertiesOutputFile("PInteger", "Appearance.Node Size", newvalue.serialize());
 
@@ -256,7 +254,7 @@ public class GraphViewer extends Viewer2D {
                         // System.out.println(" ----- scheduling node animation");
                         final int o = obj;
                         //gv.createAnimation(new Animation.IntegerAnimation(22, 30, 500) {
-                       gv.createAnimation(new Animation.IntegerAnimation(nodeSize, nodeSize + 8, 500) {
+                        gv.createAnimation(new Animation.IntegerAnimation(nodeSize, nodeSize + 8, 500) {
                             public void step(int v) {
                                 //	System.out.println(" ----- node animation step + " + v);
                                 Rectangle l = ((RectangleItem) ovalInteraction.getItem(o)).r;
@@ -270,7 +268,7 @@ public class GraphViewer extends Viewer2D {
                     protected void mouseOut(int obj) {
                         gv.setToolTipText("");
                         final Rectangle l = ((RectangleItem) ovalInteraction.getItem(obj)).r;
-                       // gv.createAnimation(new Animation.IntegerAnimation(30, nodeSize, 300) {
+                        // gv.createAnimation(new Animation.IntegerAnimation(30, nodeSize, 300) {
                         gv.createAnimation(new Animation.IntegerAnimation(nodeSize + 8, nodeSize, 300) {
                             public void step(int v) {
                                 l.w = v;
@@ -334,7 +332,7 @@ public class GraphViewer extends Viewer2D {
         ArrayList<String> nodes = graph.getNodes();
 
         for (int i = 0; i < ovals.size(); i++) {
-                    //Oval o = new Oval(0, 0, 22, 22);
+            //Oval o = new Oval(0, 0, 22, 22);
             //ovals.add(o);
             ovalInteraction.addItem(ovalInteraction.new RectangleItem(ovals.get(i)));
         }
