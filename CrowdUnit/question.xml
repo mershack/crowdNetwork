@@ -1,0 +1,33 @@
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+	    <Title>ChessTurk Game, Black to play</Title>
+	    <Text>
+	      You are helping to decide the next move in a game of chess.  The board looks like this:
+	    </Text>
+	    <Text>
+	      Black has to play the next move.
+	    </Text>
+	  </Overview>
+	  <Question>
+	    <QuestionIdentifier>nextmove</QuestionIdentifier>
+	    <DisplayName>The Next Move</DisplayName>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	      <Text>
+	        What are the PGN notation of the best move in this game? Append the following text to your answer (after a space):
+			'1-0' End Game and White Wins
+			'0-1' End Game and Black Wins
+			'1/2-1/2' Draw
+			'*' continue playing
+	      </Text>
+		 </QuestionContent>
+	    <AnswerSpecification>
+	      <FreeTextAnswer>
+	        <Constraints>
+	          <Length maxLength="10" />
+	        </Constraints>
+	        <DefaultText>d4 *</DefaultText>
+	      </FreeTextAnswer>
+	    </AnswerSpecification>
+	  </Question>
+	</QuestionForm>

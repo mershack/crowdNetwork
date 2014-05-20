@@ -1,3 +1,0 @@
-perspectives.util.Node
-perspectives.util.HierarchicalClustering
-perspectives.util.TwoInts

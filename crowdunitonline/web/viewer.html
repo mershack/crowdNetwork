@@ -1,0 +1,118 @@
+<!--%-- 
+    Document   : viewer
+    Created on : Jan 7, 2014, 2:13:44 AM
+    Author     : Mershack
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"% -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>The Viewer</title>
+
+        <link href="Styles.css" rel="stylesheet" type="text/css" />
+       
+
+        <script type="text/javascript" src="ajax.js"></script>
+	<script type="text/javascript" src="jscolor/jscolor.js"></script>
+        <script type="text/javascript" src="image-transferer.js"></script>
+ 	<script type="text/javascript" src="properties.js"></script>
+        <script type="text/javascript" src="property-manager.js"></script> 
+        <script type="text/javascript" src="viewer-canvas.js"></script> 
+
+
+        <script type="text/javascript">
+
+	var viewerCanvas;
+	var viewerCanavasDiv;
+	var propertyManager;
+	var propertyManagerDiv;
+
+	var viewerName = getUrlParameter("viewerName");
+
+	var showingPM = true;
+         
+	function initialize()
+	{
+
+		propertyManagerDiv = document.createElement("div");
+		var propertyManager = new PropertyManager(propertyManagerDiv, window.viewerName);
+		document.getElementById("left").appendChild(propertyManagerDiv);
+
+		var viewerCanvasDiv = document.createElement("div");
+		var size = getWindowSize();
+		viewerCanvas = new ViewerCanvas(viewerCanvasDiv, window, viewerName, size.width- propertyManagerDiv.offsetWidth-20 , size.height-20);
+		document.getElementById("right").appendChild(viewerCanvasDiv);
+
+		window.onmousedown = function (event)
+		{
+			if (event.target == viewerCanvasDiv || event.target.parent == viewerCanvasDiv)
+				viewerCanvas.focus = false;
+			else
+				viewerCanvas.focus = true;			
+		};
+
+		document.getElementById("hideshowcell").onclick = function()
+		{
+			showingPM = !showingPM;
+
+			if (showingPM)
+			{
+				propertyManagerDiv.style.display = "block";
+				document.getElementById("hideshow").src = "Images/show_.png";
+				var size = getWindowSize();
+				viewerCanvas.resize(size.width - propertyManagerDiv.offsetWidth-20, size.height-20);
+			}
+			else
+			{
+				propertyManagerDiv.style.display = "none";
+				document.getElementById("hideshow").src = "Images/hide_.png";
+				var size = getWindowSize();
+				viewerCanvas.resize(size.width - 20, size.height-20);
+			}
+			viewerCanvas.divMoved();
+		};
+
+		document.getElementById("hideshowcell").onmouseover = function()
+		{
+			if (showingPM)
+				document.getElementById("hideshow").src = "Images/hideglow_.png"
+			else document.getElementById("hideshow").src = "Images/showglow_.png";
+			this.bgColor = "#BBBBBB";
+		};
+		document.getElementById("hideshowcell").onmouseout = function()
+		{
+			if (showingPM)
+				document.getElementById("hideshow").src = "Images/hide_.png"
+			else document.getElementById("hideshow").src = "Images/show_.png";
+			this.bgColor = "#DDDDDD";
+		};
+
+	}
+
+	window.onresize = function(){
+
+		var size = getWindowSize();
+		viewerCanvas.resize(size.width - propertyManagerDiv.offsetWidth-20, size.height-20);
+	};
+
+
+        </script>
+    </head>
+
+    <body onload="initialize();">
+
+  
+
+     <table style ="vertical-align : top; margin : 0; padding : 0; border : 0">
+			<tr style ="vertical-align : top; margin : 0; padding : 0; border : 0">
+				<td style ="vertical-align : top; margin : 0; padding : 0; border : 0" bgColor = "#EEEEFF"> <div id="left" ></div></td>
+                                <td style ="vertical-align : middle; margin : 0; padding : 0; border : 0" width="10px" bgColor = "#DDDDDD" id="hideshowcell"> <img id="hideshow" src="Images/hide_.png" /></td>				
+				<td style ="vertical-align : top; margin : 0; padding : 0; border : 0"> <div id="right" tabindex="0"></div></td>				
+			</tr>
+     </table>
+
+    </body>
+
+</html>
