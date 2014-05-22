@@ -885,10 +885,8 @@ function PButton(name, value, readonly, hidden, disabled, propertyManager)
     this.button.id = "advance";
     this.button.onclick = (function(prop, pm) {
         return function() {
-            //pm.updateButtonValue(prop);
             prop.value = "" + this.value;
-            pm.updateValue(prop);
-            winResize();
+            pm.updateValue(prop);           
         };
     })(this, propertyManager);
 
@@ -896,11 +894,20 @@ function PButton(name, value, readonly, hidden, disabled, propertyManager)
     this.div = createDiv();
     var table = addSingleToTable(this.button);
     this.div.appendChild(table);
-    //this.div.appendChild(this.button);
-    //  alert("hey");
+           
     this.setReadOnly = setReadOnly;
     function setReadOnly(readOnly)
     {
+       // alert(readOnly);
+       // this.readOnly = readOnly;
+        if (readOnly) {
+            this.button.setAttribute("disabled", "true");
+        }
+        else {
+           this.button.removeAttribute("disabled");
+        }
+            
+
 
     }
 

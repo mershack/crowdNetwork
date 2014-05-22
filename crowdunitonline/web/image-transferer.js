@@ -40,7 +40,7 @@ function ImageTransferer(div, viewerName, w, h, tch, tcv)
 			resizing = false;
 			setInterval(thisObj.imageUpdate, 20);
 		}
-	}
+	};
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send(null);
  
@@ -49,8 +49,8 @@ function ImageTransferer(div, viewerName, w, h, tch, tcv)
 	function resize(w,h)
 	{
 		//has to divide by tch,tcv
-		while (w % tch != 0) w--;
-		while (h % tcv != 0) h--;
+		while (w % tch !== 0) w--;
+		while (h % tcv !== 0) h--;
 
 		desiredWidth = w;
 		desiredHeight = h;
@@ -76,7 +76,7 @@ function ImageTransferer(div, viewerName, w, h, tch, tcv)
 				th = h / tcv;
 				resizing = false;				
 			}
-		}
+		};
                 xmlhttp.open("GET", url, true);
                 xmlhttp.send(null);
 	}
@@ -101,7 +101,7 @@ function ImageTransferer(div, viewerName, w, h, tch, tcv)
             return;
         }
 
-	if (desiredWidth != width || desiredHeight != height)
+	if (desiredWidth !== width || desiredHeight !== height)
 	{
 		actualResize(desiredWidth, desiredHeight);
 		return;
@@ -155,14 +155,14 @@ function ImageTransferer(div, viewerName, w, h, tch, tcv)
 
         if (this.loaded === tch * tcv)
         {
-            if (this.images[0][0].width === 1 && this.images[0][1].width == 1 && this.images[1][0].width == 1 && this.images[1][1].width == 1)
+            if (this.images[0][0].width === 1 && this.images[0][1].width === 1 && this.images[1][0].width === 1 && this.images[1][1].width === 1)
             {
                 this.images = null;
                 return;
             }
             else if (this.images[0][0].width !== tw && this.images[0][1].width !== tw && this.images[1][0].width !== tw && this.images[1][1].width !== tw)  //this.tw is the width of a tile, it used to be 500 which was half of a thousand
             {
-		if (this.images[0][0].width != 1 && this.images[0][1].width != 1 && this.images[1][0].width != 1 && this.images[1][1].width != 1)
+		if (this.images[0][0].width !== 1 && this.images[0][1].width !== 1 && this.images[1][0].width !== 1 && this.images[1][1].width !== 1)
 		{
 		//alert(this.images[0][0].width + " " + this.images[0][1].width + " " + this.images[1][0].width + " " + this.images[1][1].width + " " + tw);
                 var last;

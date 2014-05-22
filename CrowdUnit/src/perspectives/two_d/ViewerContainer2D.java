@@ -348,6 +348,7 @@ public class ViewerContainer2D extends ViewerContainer{
 	{
 		this.translatex = x;
 		this.translatey = y;
+                this.render();
 	}
 	
 	public Point2D getTranslation()

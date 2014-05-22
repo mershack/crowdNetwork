@@ -138,6 +138,14 @@ public class ViewerCanvas extends HttpServlet {
 		            } 
 		            
 		            else if (request.getParameter("page").equals("imageUpdate")) {
+                                
+		                response.setContentType("text/html");
+		                response.setHeader("Cache-control", "no-cache, no-store");
+		                response.setHeader("Pragma", "no-cache");
+		                response.setHeader("Expires", "-1");
+                                
+                                
+                                
 		            	String viewerName = request.getParameter("viewerName");
 		            		            	
 		                if (viewerName != null)

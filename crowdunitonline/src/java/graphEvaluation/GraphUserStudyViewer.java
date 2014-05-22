@@ -17,12 +17,15 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -67,12 +70,18 @@ public class GraphUserStudyViewer extends GraphViewer {
     //final String TASKFILE = "tasks.txt";
     final String TASKFILE = "tasks2.txt";
     private String propChangesFile = "viewer1.txt";
+    private final String ANSWER_YES = "yes";
+    private final String ANSWER_NO = "no";
+    private final String TURK_CODE = "EDOCDOOG";
+    private final String STUDY_RESULT_FILE = "StudyResults.txt";
 
     int testCounter = 0;
     String answer;
     Property<PBoolean> panswer_no;
     Property<PBoolean> panswer_yes;
     Property<PText> ptask;
+    Property<PButton> pnext;
+    
     ArrayList<GraphTask> allTasks = new ArrayList<GraphTask>();
     String userTurkID = "";
 
@@ -103,7 +112,7 @@ public class GraphUserStudyViewer extends GraphViewer {
             public boolean updating(PString newvalue) {
 
                 //set the user's turkid and remove the turkid textbox.
-                userTurkID = newvalue.stringValue();
+                userTurkID = newvalue.stringValue();               
                 return true;
             }
         };
@@ -279,6 +288,7 @@ public class GraphUserStudyViewer extends GraphViewer {
             testNodeB = pointB.get(testCounter);//[testCounter];
             showUserStudy(testNodeA, testNodeB);
             //requestRender();
+            //pnext.setReadOnly(true); //disable the next button until an answer is selected
 
             testCounter++;
 
@@ -286,7 +296,7 @@ public class GraphUserStudyViewer extends GraphViewer {
     }
 
     public void addTestProperties() {
-        Property<PButton> pnext = new Property<PButton>("Advance.Next", new PButton()) {
+         pnext = new Property<PButton>("Advance.Next", new PButton()) {
             
             @Override
             public boolean updating(PButton newvalue) {
@@ -296,25 +306,30 @@ public class GraphUserStudyViewer extends GraphViewer {
                 }
 
                 if (testCounter < pointA.size()) { //increment the current task pointer if possible.
-
-                    
-                    
                      //remove the yes and no booleans and add them again
                     removeProperty("Answer.Yes");
                     removeProperty("Answer.No"); 
                  //   removeTestProperties();
                     
-                    
-                   panswer_yes = new Property<PBoolean>("Answer.Yes", new PBoolean(false)) {
+                    panswer_yes = new Property<PBoolean>("Answer.Yes", new PBoolean(false)) {
                         @Override
                         public boolean updating(PBoolean newvalue) {
                             boolean ans = ((PBoolean) newvalue).boolValue();
 
                             if (ans) {
+                                
+                                
+                                allTasks.get(testCounter-1).setGivenAns(ANSWER_YES);
+                                
                                 panswer_no.setValue(new PBoolean(false));
                                 panswer_no.setReadOnly(true);
+                               //pnext.setReadOnly(false);
                             } else {
+                                allTasks.get(testCounter-1).setGivenAns(ANSWER_NO);
+                                
                                 panswer_no.setReadOnly(false);
+                                
+                                //pnext.setReadOnly(true);
                             }
                             return true;
                         }
@@ -329,10 +344,11 @@ public class GraphUserStudyViewer extends GraphViewer {
                             if (ans) {
                                 panswer_yes.setValue(new PBoolean(false));
                                 panswer_yes.setReadOnly(true);
+                                //pnext.setReadOnly(false);
                             } else {
                                 panswer_yes.setReadOnly(false);
+                               // pnext.setReadOnly(true);
                             }
-
                             return true;
                         }
                     };
@@ -348,24 +364,12 @@ public class GraphUserStudyViewer extends GraphViewer {
                     ptask.setReadOnly(true);
                     addProperty(ptask);
                     
-                    
                     advanceStudy();
-                    
-                    
-                    requestRender();
-                    
-                    
-/*
-                    for (int i = 0; i < ovals.size(); i++) {
-                        ovals.get(i).h = nodeSize;
-                        ovals.get(i).w = nodeSize;
-                    }                      
-               
-                     requestRender();  */
+                   //requestRender();
 
-                   
-                    
-
+                }
+                else{
+                    endOfStudy();
                 }
 
                 return true;
@@ -378,7 +382,8 @@ public class GraphUserStudyViewer extends GraphViewer {
              }  */
              
         };
-        pnext.setPublic(true);
+        //pnext.setPublic(true);
+        //pnext.setReadOnly(true);
         this.addProperty(pnext);
 
         panswer_yes = new Property<PBoolean>("Answer.Yes", new PBoolean(false)) {
@@ -389,8 +394,10 @@ public class GraphUserStudyViewer extends GraphViewer {
                 if (ans) {
                     panswer_no.setValue(new PBoolean(false));
                     panswer_no.setReadOnly(true);
+                    //pnext.setReadOnly(false);
                 } else {
                     panswer_no.setReadOnly(false);
+                    //pnext.setReadOnly(true);
                 }
                 return true;
             }
@@ -405,8 +412,10 @@ public class GraphUserStudyViewer extends GraphViewer {
                 if (ans) {
                     panswer_yes.setValue(new PBoolean(false));
                     panswer_yes.setReadOnly(true);
+                    //pnext.setReadOnly(false);
                 } else {
                     panswer_yes.setReadOnly(false);
+                  //  pnext.setReadOnly(true);
                 }
 
                 return true;
@@ -432,18 +441,77 @@ public class GraphUserStudyViewer extends GraphViewer {
                 return true;
             }
         };
-        ptask.setReadOnly(true);
+        ptask.setDisabled(true);
         this.addProperty(ptask);
 
     }
+    
+  
+    
+    public void endOfStudy(){
+        //TODO: 1- remove the test properties
+        //2. Show the Mechanical Turk code
+        //3. Write answers to a file.
+        
+        removeTestProperties();
+        Property<PString> ptask_info = new Property<PString>("Task.Task Information", new PString("Completed!"));
+        ptask_info.setReadOnly(true);
+        this.addProperty(ptask_info);
+        
+        Property<PString> p_turk_code = new Property<PString>("Task.Your Turk Code", new PString(TURK_CODE));
+        p_turk_code.setReadOnly(true);
+        this.addProperty(p_turk_code);
+        
+        //writing answers to file
+        writeAnswersToFile();
+    }
+    
+    public void writeAnswersToFile(){
+        //TODO. Write the anser into the answers file in the following format
+        //Format:  TurkID, correctnessOfAns1, CorrectnessOfAns2, ..., correctnessOfAnsN
+        
+        //create a File with the name STUDY_RESULT and save that file in the data directory.
+        try{
+            String localDataDir = this.getContainer().getEnvironment().getLocalDataPath();
+            File studyResults = new File(localDataDir + File.separator + STUDY_RESULT_FILE);
+            
+            if(!studyResults.exists()){
+                studyResults.createNewFile();
+            }
+            //do the actual writings of the results to the file
+            FileWriter fileWritter = new FileWriter(studyResults, true);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+
+            PrintWriter pw = new PrintWriter(bufferWritter);
+
+            
+           
+            pw.print(userTurkID); //the turkid is in the first column
+            
+            for(GraphTask gtask: allTasks){
+                pw.print(","+gtask.isAnswerCorrect());
+            }
+            pw.println(); //next entry should go to the next line.
+           
+            //close the streams
+             pw.close();
+             bufferWritter.close();
+             fileWritter.close();
+            
+           
+           
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+        }
+    }
 
     public void removeTestProperties() {
-        this.removeProperty("Advance.Next");
-        this.removeProperty("Advance.Current Qn: ");
+        this.removeProperty("Advance.Next");        
         this.removeProperty("Answer.Yes");
         this.removeProperty("Answer.No");
+        this.removeProperty("Task.Qn ");
         this.removeProperty("Task. ");
-
     }
 
     public void setPropChangesFile(String propChangesFile) {
