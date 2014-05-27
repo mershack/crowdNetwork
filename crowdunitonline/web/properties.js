@@ -311,10 +311,17 @@ function PString(name, value, readonly, hidden, disabled, propertyManager)
     function setReadOnly(readOnly)
     {
         this.readOnly = readOnly;
-        if (this.readOnly || this.disabled)
-            this.letterInputBox.disabled = true;
-        else
-            this.letterInputBox.disabled = false;
+        if (this.readOnly){
+           // this.letterInputBox.disabled = true;
+            this.letterInputBox.setAttribute("readonly", "true");
+        }            
+        else{
+            //this.letterInputBox.disabled = false;
+            this.letterInputBox.removeAttribute("readonly");
+        }
+        
+        
+            
     }
 
 
@@ -334,13 +341,12 @@ function PString(name, value, readonly, hidden, disabled, propertyManager)
     this.setDisabled = setDisabled;
     function setDisabled(disabled)
     {
+        //alert("setting disabled");
         this.disabled = disabled;
-        if (this.disabled || this.readOnly)
+        if (this.disabled)
             this.letterInputBox.disabled = true;
         else
             this.letterInputBox.disabled = false;
-
-
 
         if (this.disabled)
             this.label.style.color = "#999999";
@@ -898,9 +904,7 @@ function PButton(name, value, readonly, hidden, disabled, propertyManager)
     this.setReadOnly = setReadOnly;
     function setReadOnly(readOnly)
     {
-       // alert(readOnly);
-       // this.readOnly = readOnly;
-        if (readOnly) {
+       if (readOnly) {
             this.button.setAttribute("disabled", "true");
         }
         else {
