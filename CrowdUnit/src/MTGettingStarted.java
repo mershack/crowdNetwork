@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import com.amazon.mturk.requester.RESTResponse;
-
+//daiooneoandoaei
+//anidoae
+//dioaneo
 public class MTGettingStarted {
 
 	private final static String AWS_ACCESS_KEY_ID = "AKIAIAK5C47XZSX42ZRQ";
