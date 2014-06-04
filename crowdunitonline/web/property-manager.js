@@ -187,6 +187,9 @@ function PropertyManager(div, name)
                     case "PText":
                          prop = new PText(name, value, readOnly, hidden, disabled,this);   
                          break; 
+                     case "PTextShort":
+                        prop = new PTextShort(name, value, readOnly, hidden, disabled,this);   
+                        break;
                     default:
                        //tbd
                 }

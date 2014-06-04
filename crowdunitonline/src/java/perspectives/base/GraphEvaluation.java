@@ -213,7 +213,7 @@ public class GraphEvaluation extends PropertyManager {
             gustudyViewer = (GraphUserStudyViewer) gustudyFactory.create(viewerName);
             gustudyViewer.setPropertyManagerGroup(env);
             //set the fileName for the property changes
-            gustudyViewer.setPropChangesFile(controlViewerName + ".txt");
+            gustudyViewer.setPropChangesFileOne(controlViewerName + ".txt");
 
             env.addViewer(gustudyViewer);
         }

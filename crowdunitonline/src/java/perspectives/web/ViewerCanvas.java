@@ -142,7 +142,7 @@ public class ViewerCanvas extends HttpServlet {
 		                response.setContentType("text/html");
 		                response.setHeader("Cache-control", "no-cache, no-store");
 		                response.setHeader("Pragma", "no-cache");
-		                response.setHeader("Expires", "-1");
+		                response.setHeader("Expires", "0");
                                 
                                 
                                 

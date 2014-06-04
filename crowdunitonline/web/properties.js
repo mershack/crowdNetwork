@@ -946,8 +946,8 @@ function PText(name, value, readonly, hidden, disabled, propertyManager)
     this.label = createLabel(name);
 
     this.txtarea = document.createElement('textarea');
-    this.txtarea.cols = "30";
-    this.txtarea.rows = "5";
+    this.txtarea.cols = "32";
+    this.txtarea.rows = "9";
 
     this.txtarea.innerHTML = value;
     this.div = createDiv();
@@ -988,6 +988,58 @@ function PText(name, value, readonly, hidden, disabled, propertyManager)
     }
 
     // alert("hey2");
+}
+
+function PTextShort(name, value, readonly, hidden, disabled, propertyManager){
+    this.name = name;
+    this.readOnly = readonly;
+    this.hidden = hidden;
+    this.disabled = disabled;
+
+    this.label = createLabel(name);
+
+    this.txtarea = document.createElement('textarea');
+    this.txtarea.cols = "32";
+    this.txtarea.rows = "4";
+
+    this.txtarea.innerHTML = value;
+    this.div = createDiv();
+    var table = addSingleToTable(this.txtarea);
+    this.div.appendChild(table);
+
+    this.setReadOnly = setReadOnly;
+
+    function setReadOnly(readOnly)
+    {
+        this.readOnly = readOnly;
+        if (this.readOnly || this.disabled) {
+            this.txtarea.setAttribute("readonly", "true");
+        }
+
+        else
+            this.txtarea.removeAttribute("readonly");
+
+
+    }
+
+    this.setValue = setValue;
+    function setValue(stringVal)
+    {
+        this.button.value = stringVal;
+    }
+
+    this.setHidden = setHidden;
+    function setHidden(stringVal)
+    {
+        //booleanCheckBox.value = stringVal;
+    }
+
+    this.setDisabled = setDisabled;
+    function setDisabled(disabled)
+    {
+
+    }
+
 }
 
 

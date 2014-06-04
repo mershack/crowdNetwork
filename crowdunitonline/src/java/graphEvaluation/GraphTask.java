@@ -15,8 +15,15 @@ public class GraphTask {
    private String question;
    private String correctAns;
    private String givenAns;
-   private final String qnNeigh = "Are the two highlighted nodes connected";
-   private final String qnPath_bool = "Is there a path between the two highlighted nodes";
+   private final String instruction = "------- Other Info ---------"
+           + "\n1. You can zoom in and out of the"
+           + " graph by holding the right mouse button down on an empty space and dragging in or out.\n\n"
+           + "2. You can pan the visualization by holding the left mouse button on an empty space and dragging.\n\n"
+           + "3. To change answers: first uncheck your old answer before checking your new answer.\n\n"
+           + "4. The Next button becomes active only when an answer is selected";
+   private final String qnNeigh = "Are the two highlighted nodes connected?";
+   private final String qnPath_bool = "Does any of the highlighted nodes directly connect to both of the other two?";
+   
    private final String qnPath_digit = "What is the size of the shortest path between the two highlighted nodes";
    public GraphTask(){
        
@@ -80,7 +87,9 @@ public class GraphTask {
         return (correctAns.trim().equalsIgnoreCase(givenAns));
     }
     
-    
+    public String getInstruction(){
+        return instruction;
+    }
 }
 
 

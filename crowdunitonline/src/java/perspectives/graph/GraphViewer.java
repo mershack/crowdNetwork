@@ -115,6 +115,94 @@ public class GraphViewer extends Viewer2D {
         dataFilePath = g.getFilePath();
         final GraphViewer gv = this;
 
+        this.addGraphProperties(gv);
+
+        initTask = new Task("Initializing") {
+
+            public void task() {
+                ovals = new ArrayList<Rectangle>();
+                ovalInteraction = new ObjectInteraction() {
+                    @Override
+                    protected void mouseIn(int obj) {
+                        gv.setTooltipContent(obj);
+                        // System.out.println(" ----- scheduling node animation");
+                        final int o = obj;
+                        //gv.createAnimation(new Animation.IntegerAnimation(22, 30, 500) {
+                        gv.createAnimation(new Animation.IntegerAnimation(nodeSize, nodeSize + 8, 500) {
+                            public void step(int v) {
+                                //	System.out.println(" ----- node animation step + " + v);
+                                Rectangle l = ((RectangleItem) ovalInteraction.getItem(o)).r;
+                                l.w = v;
+                                l.h = v;
+                                requestRender();
+                            }
+                        });
+                    }
+
+                    protected void mouseOut(int obj) {
+                        gv.setToolTipText("");
+                        final Rectangle l = ((RectangleItem) ovalInteraction.getItem(obj)).r;
+                        // gv.createAnimation(new Animation.IntegerAnimation(30, nodeSize, 300) {
+                        gv.createAnimation(new Animation.IntegerAnimation(nodeSize + 8, nodeSize, 300) {
+                            public void step(int v) {
+                                l.w = v;
+                                l.h = v;
+                                gv.requestRender();
+                            }
+                        });
+                    }
+
+                    protected void itemDragged(int item, Point2D delta) {
+                        gv.drawer.setX(item, gv.drawer.getX(item) + (int) delta.getX());
+                        gv.drawer.setY(item, gv.drawer.getY(item) + (int) delta.getY());
+                        gv.requestRender();
+                    }
+
+                    @Override
+                    protected void itemsSelected(int[] obj) {
+                        gv.requestRender();
+                    }
+
+                    @Override
+                    protected void itemsDeselected(int[] obj) {
+                        gv.requestRender();
+                    }
+                };
+
+                ArrayList<String> nodes = graph.getNodes();
+                for (int i = 0; i < nodes.size(); i++) {
+                    Oval o = new Oval(0, 0, 22, 22);
+                    ovals.add(o);
+                    ovalInteraction.addItem(ovalInteraction.new RectangleItem(o));
+                }
+
+                ArrayList<Integer> e1 = new ArrayList<Integer>();
+                ArrayList<Integer> e2 = new ArrayList<Integer>();
+                graph.getEdgesAsIndeces(e1, e2);
+
+                edgeSources = new int[e1.size()];
+                edgeTargets = new int[e2.size()];
+                for (int i = 0; i < e1.size(); i++) {
+                    edgeSources[i] = e1.get(i);
+                    edgeTargets[i] = e2.get(i);
+                }
+
+                drawer = new BarnesHutGraphDrawer(graph);
+                ((BarnesHutGraphDrawer) drawer).setSpringLength(300.);
+                ((BarnesHutGraphDrawer) drawer).max_step = 200.;
+
+                done();
+                requestRender();
+            }
+        };
+
+        initTask.indeterminate = true;
+        initTask.blocking = true;
+        this.startTask(initTask);
+
+    }
+
+    public void addGraphProperties(final GraphViewer gv) {
         try {
 
             Property<PFileInput> p1 = new Property<PFileInput>("Load Positions", new PFileInput()) {
@@ -242,90 +330,6 @@ public class GraphViewer extends Viewer2D {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        initTask = new Task("Initializing") {
-
-            public void task() {
-                ovals = new ArrayList<Rectangle>();
-                ovalInteraction = new ObjectInteraction() {
-                    @Override
-                    protected void mouseIn(int obj) {
-                        gv.setTooltipContent(obj);
-                        // System.out.println(" ----- scheduling node animation");
-                        final int o = obj;
-                        //gv.createAnimation(new Animation.IntegerAnimation(22, 30, 500) {
-                        gv.createAnimation(new Animation.IntegerAnimation(nodeSize, nodeSize + 8, 500) {
-                            public void step(int v) {
-                                //	System.out.println(" ----- node animation step + " + v);
-                                Rectangle l = ((RectangleItem) ovalInteraction.getItem(o)).r;
-                                l.w = v;
-                                l.h = v;
-                                requestRender();
-                            }
-                        });
-                    }
-
-                    protected void mouseOut(int obj) {
-                        gv.setToolTipText("");
-                        final Rectangle l = ((RectangleItem) ovalInteraction.getItem(obj)).r;
-                        // gv.createAnimation(new Animation.IntegerAnimation(30, nodeSize, 300) {
-                        gv.createAnimation(new Animation.IntegerAnimation(nodeSize + 8, nodeSize, 300) {
-                            public void step(int v) {
-                                l.w = v;
-                                l.h = v;
-                                gv.requestRender();
-                            }
-                        });
-                    }
-
-                    protected void itemDragged(int item, Point2D delta) {
-                        gv.drawer.setX(item, gv.drawer.getX(item) + (int) delta.getX());
-                        gv.drawer.setY(item, gv.drawer.getY(item) + (int) delta.getY());
-                        gv.requestRender();
-                    }
-
-                    @Override
-                    protected void itemsSelected(int[] obj) {
-                        gv.requestRender();
-                    }
-
-                    @Override
-                    protected void itemsDeselected(int[] obj) {
-                        gv.requestRender();
-                    }
-                };
-
-                ArrayList<String> nodes = graph.getNodes();
-                for (int i = 0; i < nodes.size(); i++) {
-                    Oval o = new Oval(0, 0, 22, 22);
-                    ovals.add(o);
-                    ovalInteraction.addItem(ovalInteraction.new RectangleItem(o));
-                }
-
-                ArrayList<Integer> e1 = new ArrayList<Integer>();
-                ArrayList<Integer> e2 = new ArrayList<Integer>();
-                graph.getEdgesAsIndeces(e1, e2);
-
-                edgeSources = new int[e1.size()];
-                edgeTargets = new int[e2.size()];
-                for (int i = 0; i < e1.size(); i++) {
-                    edgeSources[i] = e1.get(i);
-                    edgeTargets[i] = e2.get(i);
-                }
-
-                drawer = new BarnesHutGraphDrawer(graph);
-                ((BarnesHutGraphDrawer) drawer).setSpringLength(300.);
-                ((BarnesHutGraphDrawer) drawer).max_step = 200.;
-
-                done();
-                requestRender();
-            }
-        };
-
-        initTask.indeterminate = true;
-        initTask.blocking = true;
-        this.startTask(initTask);
-
     }
 
     public void resetOvalInteraction() {
@@ -377,16 +381,16 @@ public class GraphViewer extends Viewer2D {
         for (int i = 0; i < nodes.size(); i++) {
             ObjectInteraction.VisualItem item = ovalInteraction.getItem(i);
 
-            if (item.selected) {
+           /* if (item.selected) {
                 ovals.get(i).setColor(Color.red);
                 sel[i] = true;
                 selindex.add(i);
             } else if (item.hovered) {
                 ovals.get(i).setColor(Color.pink);
                 hov[i] = true;
-            } else {
+            } else {*/
                 ovals.get(i).setColor(nodeColor);
-            }
+           // }
 
         }
 
@@ -424,11 +428,11 @@ public class GraphViewer extends Viewer2D {
     }
 
     public void renderNode(int i, boolean selected, boolean hovered, Graphics2D g) {
-        if (selected) {
+      /*  if (selected) {
             ovals.get(i).setColor(Color.red);
         } else if (hovered) {
             ovals.get(i).setColor(Color.pink);
-        }
+        }*/
 
         ovals.get(i).render(g);
 
@@ -458,13 +462,15 @@ public class GraphViewer extends Viewer2D {
         int x2 = (int) drawer.getX(p2);
         int y2 = (int) drawer.getY(p2);
 
-        if (selected) {
-            g.setColor(new Color(255, 0, 0, 200));
-        } else if (hovered) {
-            g.setColor(new Color(255, 100, 100, 200));
-        } else {
-            g.setColor(new Color(150, 150, 150, 200));
-        }
+        //NB: commented below to prevent highlighting of edges. Comment can be removed
+        //      to reverse it later.
+       /* if (selected) {
+         g.setColor(new Color(255, 0, 0, 200));
+         } else if (hovered) {
+         g.setColor(new Color(255, 100, 100, 200));
+         } else { */
+        g.setColor(new Color(150, 150, 150, 200));
+       // }
 
         // g.setColor(new Color(150, 150, 150, 200));
         g.setStroke(new BasicStroke(2));

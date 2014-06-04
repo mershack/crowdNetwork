@@ -184,8 +184,6 @@ public class ObjectInteraction {
 	{
 		boolean ret = false;
 		
-		
-		
 		//not dragging
 		for (int i=0; !dragging && i<layers.size(); i++)
 		{

@@ -21,12 +21,12 @@ public class MTurkRequestsMgr {
         private final static String QN_FILE_NAME = "graphQuestionForm.xml";
         private String awsAccessKey;
         private String secretKey;
-        private String title = "graphTasks17";
+        private String title = "graphTasks1";
         private String description = "You will be shown a graph visualization with two nodes highlighted. You will be asked whether the "
                                                                 + "highlighted nodes are connected or whether there is a path between them"; // description
         private String questionFileName;
         private String question;
-        private String lifetimeInSeconds = "100000"; //expiration of HIT: 1 day 3 hours        
+        private String lifetimeInSeconds = "800000"; //expiration of HIT: 1 day 3 hours        
         private String keywords = "graph visualization, graph tasks, visualization, interactive graphs"; //keywords
         private String reward = "0.00"; //reward : $0.01
          private int maxAssignments = 5;
