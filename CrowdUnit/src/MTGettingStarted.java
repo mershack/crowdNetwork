@@ -1,4 +1,4 @@
-package perspectives.mturk;
+
 import com.amazon.mturk.requester.*;
 
 import java.io.FileInputStream;
