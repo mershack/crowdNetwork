@@ -401,16 +401,30 @@ public class Environment extends PropertyManagerGroup implements Serializable{
 	       });	
                    
                        /***added for Evaluation button **/    
-               JButton evalButton = new JButton("Evaluate");		       
+               JButton userStudylButton = new JButton("User Study");		       
 	       //helpButton.setIcon(helpIcon);
-	         evalButton.setBounds(165,10,100,25);	     
-		   viewerArea.add(evalButton);
-		   evalButton.setVisible(true);   
-		   evalButton.setToolTipText("Evaluation");
+	         userStudylButton.setBounds(165,10,100,25);	     
+		   viewerArea.add(userStudylButton);
+		   userStudylButton.setVisible(true);   
+		   userStudylButton.setToolTipText("User Study");
 	     
-		   evalButton.addActionListener(new ActionListener() {	    	   
+		   userStudylButton.addActionListener(new ActionListener() {	    	   
 	    	   public void actionPerformed(ActionEvent e) {
 	    		   createNewGraphEvaluation();			    		        
+			      }			      
+	       });	
+                   
+                   
+                            /***for the user study results evaluation **/    
+               JButton studyResultsButton = new JButton("Evaluate Study Results");		       
+	           studyResultsButton.setBounds(285,10,150,25);	     
+		   viewerArea.add(studyResultsButton);
+		   studyResultsButton.setVisible(true);   
+		   studyResultsButton.setToolTipText("Evaluate Study Results");
+	     
+		   studyResultsButton.addActionListener(new ActionListener() {	    	   
+	    	   public void actionPerformed(ActionEvent e) {
+	    		   createNewUserStudyResultsEvaluation();			    		        
 			      }			      
 	       });	
                    
@@ -423,7 +437,7 @@ public class Environment extends PropertyManagerGroup implements Serializable{
          /**Create a new graph Evaluation */
        public void createNewGraphEvaluation(){
            //add the evaluation
-           GraphEvaluation gEv = new GraphEvaluation("Graph Evaluation", this);
+           GraphUserStudy gEv = new GraphUserStudy("Graph Evaluation", this);
            
           final JInternalFrame dataFrame = new JInternalFrame(gEv.getName());
             dataFrame.setFrameIcon(dataIcon);
@@ -473,6 +487,54 @@ public class Environment extends PropertyManagerGroup implements Serializable{
        /*************************/
         
         
+       public void createNewUserStudyResultsEvaluation(){
+            //add the evaluation
+           UserStudyResultsEvaluation uSRE = new UserStudyResultsEvaluation("User Study Evaluation", this);
+           
+          final JInternalFrame dataFrame = new JInternalFrame(uSRE.getName());
+            dataFrame.setFrameIcon(dataIcon);
+            dataFrame.setBorder(BorderFactory.createLineBorder(new Color(180,180,250)));
+            dataFrame.setBounds(newDataX,newDataY,200,400);
+            dataFrame.setVisible(true);
+            dataFrame.setClosable(true);
+            dataFrame.setIconifiable(true);
+            viewerArea.add(dataFrame);	
+		
+		
+		newDataY += 30;
+		newDataX += 10;
+		
+		viewerArea.setComponentZOrder(dataFrame, 0);	
+		
+                
+		viewerArea.setComponentZOrder(dataFrame, 0);
+		
+		PropertyManagerViewer pmv = new PropertyManagerViewer(uSRE);
+                PropertyManagerChangeListener pmcl = new PropertyManagerChangeListener()
+		{
+			public void propertyValueChanges(PropertyManager pm, Property p, PropertyType newValue) {	}		
+			public void propertyReadonlyChanges(PropertyManager pm, Property p, boolean newReadOnly) {		}
+			public void propertyVisibleChanges(PropertyManager pm, Property p, boolean newVisible) {		}
+			public void propertyPublicChanges(PropertyManager pm, Property p, boolean newPublic) {		}
+			public void propertyDisabledChanges(PropertyManager pm, Property p, boolean enabled) {			}
+			public void propertyProperyManagerChanges(PropertyManager pm, Property p, PropertyManager newpm) {	}
+
+			public void propertyAdded(PropertyManager pm, Property p) {	
+				dataFrame.pack();	
+			}
+
+			@Override
+			public void propertyRemoved(PropertyManager pm, Property p) {
+				dataFrame.pack();			
+			}
+			
+		};
+		uSRE.addChangeListener(pmcl);
+                
+                
+		dataFrame.add(pmv);		
+		dataFrame.pack();
+       }
 	
 	public String getLocalDataPath()
 	{
@@ -488,7 +550,7 @@ public class Environment extends PropertyManagerGroup implements Serializable{
 	
 	public void showLinksManager()
 	{
-		//open a dialog box; create a viewer
+            //open a dialog box; create a viewer
 		LinksManager vc = new LinksManager(this);
 		vc.setVisible(true);
 	}

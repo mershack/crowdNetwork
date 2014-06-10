@@ -46,6 +46,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import org.lwjgl.openal.AL10;
+import perspectives.base.PEvent;
 
 import perspectives.base.Property;
 import perspectives.base.PropertyManager;
@@ -77,17 +79,15 @@ public class GraphUserStudyViewer extends GraphViewer {
     //ArrayList<Integer> testPointB;
 
     //final String TASKFILE = "tasks.txt";
-    final String TASKFILE = "tasks3.txt";
+    final String TASKFILE = "tasks4.txt";
     private String propChangesFile1 = "viewer1.txt";
     private String propChangesFile2 = "viewer2.txt";
     private final String ANSWER_YES = "yes";
     private final String ANSWER_NO = "no";
     private final String TURK_CODE = "EDOCDOOG";
     private final String STUDY_RESULT_FILE = "StudyResults.txt";
-    private String studyType = "Within";//"Between";  //this can be Between or Within
-    // private String studyType = "Between";  //this can be Between or Within
-    // private boolean withinStudy = false;
-    //private boolean withinStudy = true;
+    // private String studyType = "Within";//"Between";  //this can be Between or Within
+    private String studyType = "Between";  //this can be Between or Within
 
     int testCounter = 0;
     int totalQualitativeQn = 0;
@@ -113,6 +113,11 @@ public class GraphUserStudyViewer extends GraphViewer {
     boolean firstTimeEaseOfInteractivityRating = true;
     boolean firstTimeInteractiveUseYesAns = true;
     boolean firstTimeInteractiveUseNoAns = true;
+    boolean mouseOverUsed = false;
+    boolean mouseClickingUsed = false;
+    boolean zoomingUsed = false;
+    boolean panningUsed = false;
+    boolean noInteractivityUsed = false;
 
     int interact_helpfulnessRating;
     int interact_easenessRating;
@@ -152,7 +157,7 @@ public class GraphUserStudyViewer extends GraphViewer {
                 + "- Type 2: You will determine if three highlighted nodes are directly connected (Yes/No).\n\n"
                 + "You will be given a simple trial involving questions of each type. "
                 + "You can check whether your chosen answer is correct or not during the trial session.\n\n"
-                + "There are 30 questions in total in the  main study";
+                + "There are 20 questions in total in the  main study";
 
         Property<PText> ptutorial = new Property<PText>("Tutorial.Instruction", new PText(tutinstr));
         ptutorial.setReadOnly(true);
@@ -434,13 +439,118 @@ public class GraphUserStudyViewer extends GraphViewer {
         String interactHelpfulQn = "Can you rate how helpful the interactivity was for the tasks you performed using a 1 - 5 point"
                 + " where 1 means Not Helpful and 5 means Very Helpful. Answer below";
 
-        String interactuse = "Did you successfully used any of  the interactivity during the tasks(i.e. zooming and panning)? Answer below";
+        String interactuse = "Did you successfully used any of  the interactivity shown below during the tasks? Check all that apply";
 
+      
+        
+        
+        
+        
+        
         Property<PTextShort> pinteractuse = new Property<PTextShort>("Qualitative.Qn1", new PTextShort(interactuse));
         pinteractuse.setReadOnly(true);
         this.addProperty(pinteractuse);
 
-        panswer_yes = new Property<PBoolean>("Qualitative.Yes", new PBoolean(false)) {
+        Property<PBoolean> p_mouseclickUsed = new Property<PBoolean>("Qualitative.Clicking Nodes", new PBoolean(false)){
+            @Override
+            public boolean updating(PBoolean newvalue){
+                boolean value  = newvalue.boolValue();
+                
+                    if(value){
+                        if(!anyInteractivityUsed()){
+                            qualitativeAnscount++;
+                        }
+                        mouseClickingUsed = newvalue.boolValue();                        
+                    }
+                    else{
+                         mouseClickingUsed = newvalue.boolValue();
+                         if(!anyInteractivityUsed()){
+                             qualitativeAnscount--;
+                         }
+                    }                    
+                    checkAllQualitativeQnAnswered();
+                    
+                return true;
+            }
+        };
+        
+        this.addProperty(p_mouseclickUsed);
+        
+        Property<PBoolean> p_mouseoverUsed = new Property<PBoolean>("Qualitative.Mouse-over Nodes", new PBoolean(false)){
+            @Override
+            public boolean updating(PBoolean newvalue){
+                boolean value  = newvalue.boolValue();
+                
+                    if(value){
+                        if(!anyInteractivityUsed()){
+                            qualitativeAnscount++;
+                        }
+                        mouseOverUsed = newvalue.boolValue();                        
+                    }
+                    else{
+                         mouseOverUsed = newvalue.boolValue();
+                         if(!anyInteractivityUsed()){
+                             qualitativeAnscount--;
+                         }
+                    }                    
+                    checkAllQualitativeQnAnswered();
+                    
+                return true;
+            }
+        };
+        this.addProperty(p_mouseoverUsed);
+        
+        
+          Property<PBoolean> p_panningUsed = new Property<PBoolean>("Qualitative.Panning", new PBoolean(false)){
+            @Override
+            public boolean updating(PBoolean newvalue){
+                boolean value  = newvalue.boolValue();
+                
+                    if(value){
+                        if(!anyInteractivityUsed()){
+                            qualitativeAnscount++;
+                        }
+                        panningUsed = newvalue.boolValue();                        
+                    }
+                    else{
+                        panningUsed = newvalue.boolValue();
+                         if(!anyInteractivityUsed()){
+                             qualitativeAnscount--;
+                         }
+                    }                    
+                    checkAllQualitativeQnAnswered();
+                    
+                return true;
+            }
+        };
+        this.addProperty(p_panningUsed);
+        
+        
+          Property<PBoolean> p_zoomingUsed = new Property<PBoolean>("Qualitative.Zooming", new PBoolean(false)){
+            @Override
+            public boolean updating(PBoolean newvalue){
+                boolean value  = newvalue.boolValue();
+                
+                    if(value){
+                        if(!anyInteractivityUsed()){
+                            qualitativeAnscount++;
+                        }
+                        zoomingUsed = newvalue.boolValue();                        
+                    }
+                    else{
+                         zoomingUsed = newvalue.boolValue();
+                         if(!anyInteractivityUsed()){
+                             qualitativeAnscount--;
+                         }
+                    }                    
+                    checkAllQualitativeQnAnswered();
+                    
+                return true;
+            }
+        };
+        this.addProperty(p_zoomingUsed);
+        
+        /*panswer_yes = new Property<PBoolean>("Qualitative.Yes", new PBoolean(false)) {
             @Override
             public boolean updating(PBoolean newvalue) {
                 boolean ans = ((PBoolean) newvalue).boolValue();
@@ -503,7 +613,7 @@ public class GraphUserStudyViewer extends GraphViewer {
                 return true;
             }
         };
-        this.addProperty(panswer_no);
+        this.addProperty(panswer_no);  */
 
         Property<PTextShort> pease = new Property<PTextShort>("Qualitative.Qn2 ", new PTextShort(easeQn));
         pease.setReadOnly(true);
@@ -626,6 +736,17 @@ public class GraphUserStudyViewer extends GraphViewer {
          }*/
     }
 
+    
+    public boolean  anyInteractivityUsed(){
+        
+        if(!(mouseClickingUsed||mouseOverUsed||panningUsed||zoomingUsed ||noInteractivityUsed)){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    
     public void checkAllQualitativeQnAnswered() {
         if (qualitativeAnscount == totalQualitativeQn) {
             pfinish_study.setReadOnly(false);
@@ -640,6 +761,10 @@ public class GraphUserStudyViewer extends GraphViewer {
         removeProperty("Qualitative.End Of Study");
         removeProperty("Qualitative.Info");
         removeProperty("Qualitative.Qn1");
+        removeProperty("Qualitative.Clicking Nodes");
+        removeProperty("Qualitative.Mouse-over Nodes");
+        removeProperty("Qualitative.Panning");
+        removeProperty("Qualitative.Zooming");
         removeProperty("Qualitative.Yes");
         removeProperty("Qualitative.No");
         removeProperty("Qualitative.Qn2 ");
@@ -707,6 +832,8 @@ public class GraphUserStudyViewer extends GraphViewer {
                         && ((graph.isEdge(graph.getNodes().get(a), graph.getNodes().get(b))
                         && graph.isEdge(graph.getNodes().get(a), graph.getNodes().get(c)))
                         || (graph.isEdge(graph.getNodes().get(a), graph.getNodes().get(c))
+                        && graph.isEdge(graph.getNodes().get(b), graph.getNodes().get(c)))
+                        || (graph.isEdge(graph.getNodes().get(a), graph.getNodes().get(b))
                         && graph.isEdge(graph.getNodes().get(b), graph.getNodes().get(c))))) {
                     ans = "yes";
                 }
@@ -727,6 +854,8 @@ public class GraphUserStudyViewer extends GraphViewer {
                 }
 
             }
+            
+          // printTaskCorrectAns();
 
             br.close();
 
@@ -736,6 +865,18 @@ public class GraphUserStudyViewer extends GraphViewer {
             ex.printStackTrace();
         }
     }
+    
+    public void printTaskCorrectAns(){
+        
+        System.out.println("*************::::::::::::::::::********************");
+        
+        for (int i=0; i<testTasks.size(); i++){           
+           System.out.println(testPointA.get(i)+ "\t" + testPointB.get(i) + "\t" + testPointC.get(i) + "\t: " + testTasks.get(i).getCorrectAns());                   
+        }
+        
+        System.out.println("*************::::::::::::::::::********************");
+        
+    }   
 
     @Override
     public void render(Graphics2D g) {
@@ -1019,7 +1160,9 @@ public class GraphUserStudyViewer extends GraphViewer {
                 for (int i = 0; i < testTasks.size(); i++) {
                     pw.print(",Qn" + (i + 1));
                 }
-                pw.printf("," + "interactive_use" + "interactive_easenessRating" + "interactive_helpfulnessRating");
+            //    pw.printf("," + "interactive_use" + "interactive_easenessRating" + "interactive_helpfulnessRating");
+                    pw.printf("," + "Node-Clicking-Used, Mouse-Over-Used, Panning-Used, Zooming-Used,"
+                            + "interactive_easenessRating, interactive_helpfulnessRating");
                 pw.println();
             }
 
@@ -1029,8 +1172,13 @@ public class GraphUserStudyViewer extends GraphViewer {
                 pw.print("," + gtask.isAnswerCorrect());
             }
 
+            
             //append the quantitative answers to the answers
-            pw.printf("," + interact_use + "," + interact_easenessRating + "," + interact_helpfulnessRating);
+          //  pw.printf("," + interact_use + "," + interact_easenessRating + "," + interact_helpfulnessRating);
+             // pw.printf("," + "Node-Clicking-Used, Mouse-Over-Used, Panning-Used, Zooming-Used,"
+                           // + "interactive_easenessRating, interactive_helpfulnessRating");
+              pw.printf("," + mouseClickingUsed + "," +mouseOverUsed + "," + panningUsed + "," + zoomingUsed + ","
+                      + interact_easenessRating + "," + interact_helpfulnessRating);
 
             pw.println(); //next entry should go to the next line.
 
@@ -1082,7 +1230,11 @@ public class GraphUserStudyViewer extends GraphViewer {
         int y2 = (int) ovals.get(index1).y;
 
         this.setTranslation(-(x1 + x2) / 2 + 300, -(y1 + y2) / 2 + 400);
-        getContainer().resetTiles();
+
+        if (!(studyType.equalsIgnoreCase("Within") && (testCounter == testTasks.size() / 2))) {
+            getContainer().resetTiles();
+        }
+
         this.requestRender();
 
     }

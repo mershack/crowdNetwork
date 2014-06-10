@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Perspectives Online</title>
+        <link href="Styles.css" rel="stylesheet" type="text/css" /><!--[if lte IE 7]>
+        <style>
+        .content { margin-right: -1px; } /* this 1px negative margin can be placed on any of the columns in this layout with the same corrective effect. */
+        ul.nav a { zoom: 1; }  /* the zoom property gives IE the hasLayout trigger it needs to correct extra whiltespace between the links */
+        </style>
+        <![endif]-->
+
+
+        <script type="text/javascript" src="ajax.js"></script>
+        <script type="text/javascript" src="jscolor/jscolor.js"></script>
+        <script type="text/javascript" src="properties.js"></script>
+        <script type="text/javascript" src="property-manager.js"></script>
+        <script type="text/javascript" src="viewer-manager.js"></script>
+        <script type="text/javascript" src="datasource-manager.js"></script>
+
+        <script>
+            window.onload = function() {
+                var dfRequest = getXMLHttpRequest();
+                dfRequest.onreadystatechange = function()
+                {
+                    if (dfRequest.readyState === 4 && dfRequest.status === 200)
+                    {
+                        checkCurrentViewers();
+                    }
+                };
+                dfRequest.open("GET", "InitServlet?page=home", true);
+                dfRequest.send(null);
+            };
+
+            function checkCurrentViewers() {
+                var dfRequest = getXMLHttpRequest();
+                dfRequest.onreadystatechange = function()
+                {
+                    if (dfRequest.readyState === 4 && dfRequest.status === 200)
+                    {
+                        var cnt = 1;
+                        var response = dfRequest.responseText;
+                        if (response.length > 0) {
+                            var split = response.split(";");
+                            cnt = split.length + 1;
+                        }
+                        createTheViewer(cnt);
+                    }
+                };
+                var url = "ViewerManagement?page=getCurrentViewers";
+                dfRequest.open("GET", url, true);
+                dfRequest.send(null);
+            }
+
+            function createTheViewer(cnt) {
+                var factoryType = "GraphUserStudy";
+                var viewerName = "Viewer" + cnt;  //we will create new viewers for each unique study
+
+                var dfRequest = getXMLHttpRequest();
+                dfRequest.onreadystatechange = function()
+                {
+                    if (dfRequest.readyState === 4 && dfRequest.status === 200)
+                    {
+                        redirectToViewer(viewerName);
+                    }
+                };
+                var url = "ViewerManagement?page=createViewer&type=" + factoryType + "&viewerName=" + viewerName + "&data=graphdata";
+                dfRequest.open("GET", url, true);
+                dfRequest.send(null);
+            }
+
+            function redirectToViewer(viewerName) {
+                window.location = "viewer.html?viewerName=" + viewerName;
+            }
+
+
+
+        </script>
+
+
+
+    </head>
+
+    <body>
+
+        <!-- 
+        <div id="viewerDiv" style="display:none;">
+            <a href="viewer.html?viewerName=Viewer1">Viewer</a>
+        </div>
+
+        -->
+
+    </body>
+</html>

@@ -25,14 +25,15 @@ public class PStringWidget extends PropertyWidget {
 	public void widgetLayout()
 	{			
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+                setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		this.add(new JLabel(this.p.getDisplayName()));
 
 		final PropertyWidget th = this;
 		
 		control = new JTextField();
 		control.setText(((PString)this.p.getValue()).stringValue());
-		control.setMaximumSize(new Dimension(70,20));
-		control.setPreferredSize(new Dimension(70,20));
+		control.setMaximumSize(new Dimension(100,20));
+		control.setPreferredSize(new Dimension(100,20));
 		
 		readOnlyControl = new JLabel();
 		readOnlyControl.setText(((PString)this.p.getValue()).stringValue());
@@ -45,8 +46,8 @@ public class PStringWidget extends PropertyWidget {
 		     }
 		});
 		
-		this.add(Box.createRigidArea(new Dimension(5,1)));
-		this.add(control);	
+		//this.add(Box.createRigidArea(new Dimension(5,1)));
+                this.add(control);	
 		this.add(Box.createHorizontalGlue());
 	
 		

@@ -381,16 +381,16 @@ public class GraphViewer extends Viewer2D {
         for (int i = 0; i < nodes.size(); i++) {
             ObjectInteraction.VisualItem item = ovalInteraction.getItem(i);
 
-           /* if (item.selected) {
-                ovals.get(i).setColor(Color.red);
+            if (item.selected) {
+                ovals.get(i).setColor(Color.gray);
                 sel[i] = true;
                 selindex.add(i);
             } else if (item.hovered) {
-                ovals.get(i).setColor(Color.pink);
+                ovals.get(i).setColor(Color.lightGray);
                 hov[i] = true;
-            } else {*/
+            } else {
                 ovals.get(i).setColor(nodeColor);
-           // }
+            }
 
         }
 
@@ -428,12 +428,11 @@ public class GraphViewer extends Viewer2D {
     }
 
     public void renderNode(int i, boolean selected, boolean hovered, Graphics2D g) {
-      /*  if (selected) {
-            ovals.get(i).setColor(Color.red);
+        if (selected) {
+            ovals.get(i).setColor(Color.gray);
         } else if (hovered) {
-            ovals.get(i).setColor(Color.pink);
-        }*/
-
+            ovals.get(i).setColor(Color.lightGray);
+        }
         ovals.get(i).render(g);
 
     }
@@ -464,13 +463,13 @@ public class GraphViewer extends Viewer2D {
 
         //NB: commented below to prevent highlighting of edges. Comment can be removed
         //      to reverse it later.
-       /* if (selected) {
-         g.setColor(new Color(255, 0, 0, 200));
-         } else if (hovered) {
-         g.setColor(new Color(255, 100, 100, 200));
-         } else { */
-        g.setColor(new Color(150, 150, 150, 200));
-       // }
+        if (selected) {
+            g.setColor(new Color(255, 0, 0, 200));
+        } else if (hovered) {
+            g.setColor(new Color(255, 100, 100, 200));
+        } else {
+            g.setColor(new Color(150, 150, 150, 200));
+        }
 
         // g.setColor(new Color(150, 150, 150, 200));
         g.setStroke(new BasicStroke(2));
@@ -479,45 +478,52 @@ public class GraphViewer extends Viewer2D {
     }
 
     @Override
-    public boolean mousepressed(int x, int y, int button) {
+    public boolean mousepressed(int x, int y, int button
+    ) {
         ovalInteraction.mousePress(x, y);
         return false;
     }
 
     @Override
-    public boolean mousereleased(int x, int y, int button) {
+    public boolean mousereleased(int x, int y, int button
+    ) {
         ovalInteraction.mouseRelease(x, y);
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean mousemoved(int x, int y) {
+    public boolean mousemoved(int x, int y
+    ) {
         boolean ret = ovalInteraction.mouseMove(x, y);
+       
         return ret;
-        // TODO Auto-generated method stub
+       // TODO Auto-generated method stub
 
     }
 
     @Override
-    public boolean mousedragged(int x, int y, int px, int py) {
-        boolean ret;
+    public boolean mousedragged(int x, int y, int px, int py
+    ) {
+       boolean ret;
         ret = ovalInteraction.mouseMove(x, y);
-        return ret;
+       return ret;
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void keyPressed(String key, String mod) {
-        System.out.println("graph viewer keypress: " + key + " , " + mod);
+    public void keyPressed(String key, String mod
+    ) {
+       System.out.println("graph viewer keypress: " + key + " , " + mod);
         ovalInteraction.ctrlPress();
         // TODO Auto-generated method stub
         super.keyPressed(key, mod);
     }
 
     @Override
-    public void keyReleased(String key, String mod) {
+    public void keyReleased(String key, String mod
+    ) {
         ovalInteraction.ctrlRelease();
         // TODO Auto-generated method stub
         super.keyReleased(key, mod);

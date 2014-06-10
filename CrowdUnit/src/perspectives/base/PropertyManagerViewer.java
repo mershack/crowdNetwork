@@ -84,7 +84,8 @@ public class PropertyManagerViewer extends JPanel
 		JPanel wrapper = new JPanel();
 		wrapper.setBorder(null);
 		wrapper.setLayout(new BoxLayout(wrapper,BoxLayout.X_AXIS));
-		wrapper.add(Box.createRigidArea(new Dimension(180,1)));		
+		//wrapper.add(Box.createRigidArea(new Dimension(180,1)));		
+                wrapper.add(Box.createRigidArea(new Dimension(300,1)));	//NB: the 300 is for the width of the window	
 		
 		this.add(wrapper);		
 	
@@ -271,7 +272,8 @@ public class PropertyManagerViewer extends JPanel
 	{
 		PropertyWidget pw = widgetFactories.get(p.getValue().typeName()).createWidget(p);
 		
-		int preferredWidth = 180;	
+		//int preferredWidth = 180;	
+                int preferredWidth = 300;	
 	
 		
 		String[] split = p.getName().split("\\.");

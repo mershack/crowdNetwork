@@ -20,7 +20,7 @@ public class MTurkRequestsMgr {
     private String awsAccessKey;
     private String secretKey;
     private String title = "graphTasks1";
-    private String description = "You will be shown a graph visualization with two nodes highlighted. You will be asked whether the "
+    private String description = "You will be shown a graph visualization with two or three nodes highlighted. You will be asked whether the "
             + "highlighted nodes are connected or whether there is a path between them"; // description
     private String questionFileName;
     private String question;

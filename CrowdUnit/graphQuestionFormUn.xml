@@ -1,0 +1,42 @@
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+	<Overview>
+	    <Title>Graph Tasks</Title>
+	    <Text>
+		 We are conducting an academic study about Graph Visualizations. We need to understand your views about a graph visualization by performing a couple of graph tasks. 
+		 
+		 You will be presented with an interactive graph visualization and you will determine whether 2 highlighted nodes in the graph are 
+		 directly connected, or have a path between them. You will be answering yes or no to these questions. The graph visualization looks like the image shown below:
+		</Text>		
+		<Binary>
+			<MimeType>
+				<Type>image</Type>
+				<SubType>png</SubType>
+			</MimeType>
+			<DataURL>http://vizlab.cs.fiu.edu/crowdunitonline/Images/graphTaskExample.png</DataURL>
+			<AltText>An example Task</AltText>	
+		</Binary>			
+	</Overview>
+	  <Question>
+	    <QuestionIdentifier>study code</QuestionIdentifier>
+	    <DisplayName>the study code</DisplayName>
+	    <IsRequired>true</IsRequired>
+	    <QuestionContent>
+	      <Text>
+			Please Open the link below in a new browser window to complete the graph visualization study.  At the end of the study, you will receive a code to paste 
+			into the box below to receive credit for taking our study. Thank you.
+		  
+			Link to Study:   http://vizlab.cs.fiu.edu/crowdunitonline/
+		  
+			Provide the study code here:
+	      </Text>
+		 </QuestionContent>
+	    <AnswerSpecification>
+	      <FreeTextAnswer>
+	        <Constraints>
+	          <Length minLength="8" maxLength="10" />
+	        </Constraints>	
+			<NumberOfLinesSuggestion>1</NumberOfLinesSuggestion>
+	      </FreeTextAnswer>
+	    </AnswerSpecification>
+	  </Question>
+	</QuestionForm>
