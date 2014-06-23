@@ -68,9 +68,9 @@ import perspectives.base.PropertyType;
 			String[] s = name.split("\\.");
 			String labelText =  s[s.length-1];
 			String ext = "";
-			if (labelText.length() > 50)
+			if (labelText.length() > 70)
 				ext = "..";
-			labelText = labelText.substring(0, Math.min(labelText.length(), 50)) + ext;		
+			labelText = labelText.substring(0, Math.min(labelText.length(), 70)) + ext;		
 			return labelText;
 		}
 		

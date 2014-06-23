@@ -1,0 +1,2 @@
+TurkID,Rate how easy the Visualization tasks were between 1 - 5 (where 1 means Not-Easy) and 5 means Very-Easy
+JONESAE,3

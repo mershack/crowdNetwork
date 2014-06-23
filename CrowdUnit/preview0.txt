@@ -1,7 +1,2 @@
-PFileInput,Load Positions,C:\Users\Mershack\Documents\pos5.txt
-PInteger,Appearance.Node Size,23
-PInteger,Appearance.Node Size,24
-PInteger,Appearance.Node Size,25
-PInteger,Appearance.Node Size,23
-PInteger,Appearance.Node Size,24
-PInteger,Appearance.Node Size,25
+PInteger,Appearance.Node Size,22
+PColor,Appearance.Node Color,255-0-0-255

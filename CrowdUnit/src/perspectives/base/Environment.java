@@ -237,6 +237,12 @@ public class Environment extends PropertyManagerGroup implements Serializable{
 						return new PButtonWidget(p);
 				}});
                                 
+                                this.registerNewType(new PTextShort(""), new PropertyWidgetFactory() {
+					public PropertyWidget createWidget(Property p) {
+						return new PTextShortWidget(p);
+				}});
+                                
+                                
 		final Environment ev = this;
 		Timer unresponsive = new Timer(1000, new ActionListener()
 		{
@@ -482,6 +488,7 @@ public class Environment extends PropertyManagerGroup implements Serializable{
                 
 		dataFrame.add(pmv);		
 		dataFrame.pack();
+                
            
        }	
        /*************************/

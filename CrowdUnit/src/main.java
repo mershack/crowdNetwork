@@ -1,3 +1,4 @@
+
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -17,37 +18,37 @@ import perspectives.graph.GraphViewerFactory;
 import perspectives.parallel_coordinates.ParallelCoordinateViewerFactory;
 import perspectives.util.TableDataFactory;
 
-
 public class main {
 
-	  public static void main(String[] args) {  
-		  
-		  System.out.println(args.length);
-		  
-		  Environment e = new Environment(false);
-		  e.setLocalDataPath("c:/work/code/perspectives/data");
-	    
-	       
-	     e.registerDataSourceFactory(new GraphDataFactory());
-	      
-	     e.registerDataSourceFactory(new TableDataFactory()); 
-	      
-	      e.registerViewerFactory(new GraphViewerFactory());
-	      
-	      e.registerViewerFactory(new BundledGraphFactory());
-	      
-	      e.registerViewerFactory(new ParallelCoordinateViewerFactory());
-	      
-	      e.registerDataSourceFactory(new BrainDataFactory());
-	      e.registerViewerFactory(new BrainViewerFactory());
+    public static void main(String[] args) {
+
+        System.out.println(args.length);
+
+        Environment e = new Environment(false);
+		 // e.setLocalDataPath("c:/work/code/perspectives/data");
+        //  e.setLocalDataPath("C:\\Users\\mokoe001\\Documents\\CrowdUnit\\data");
+        // C:\Users\Mershack\Documents\NetbeansProjects\GitHub_projects\crowdNetwork\CrowdUnit\data
+        e.setLocalDataPath("C:\\Users\\Mershack\\Documents\\NetbeansProjects\\GitHub_projects\\crowdNetwork\\CrowdUnit\\data");
+     //   e.setLocalDataPath("C:\\Users\\Mershack\\Desktop\\CrowdUnit\\data");
+        
+        e.registerDataSourceFactory(new GraphDataFactory());
+
+        e.registerDataSourceFactory(new TableDataFactory());
+
+        e.registerViewerFactory(new GraphViewerFactory());
+
+        e.registerViewerFactory(new BundledGraphFactory());
+
+        e.registerViewerFactory(new ParallelCoordinateViewerFactory());
+
+        e.registerDataSourceFactory(new BrainDataFactory());
+        e.registerViewerFactory(new BrainViewerFactory());
 //	      
-	      e.registerViewerFactory(new PerformanceViewerFactory());
-              e.registerViewerFactory(new GraphUserStudyViewerFactory());
-	      
+        e.registerViewerFactory(new PerformanceViewerFactory());
+        e.registerViewerFactory(new GraphUserStudyViewerFactory());
+
 	      //e.addViewer(new PerformanceTester("g"));
-	      
 	    //  e.registerDataSourceFactory(new NameDataFactory());
-	    //  e.registerViewerFactory(new NameViewerFactory()); 
-  
-	  }
+        //  e.registerViewerFactory(new NameViewerFactory()); 
+    }
 }

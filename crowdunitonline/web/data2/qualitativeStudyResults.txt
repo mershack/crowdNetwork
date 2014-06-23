@@ -1,0 +1,4 @@
+TurkID,Rate how easy the Visualization tasks were between 1 - 5 (where 1 means Not-Easy) and 5 means Very-Easy,Rate how the easines of using the interactive techniques between 1 - 5 (where 1 means Not-Easy and 5 means Very-Easy),Rate how helpful the interactive techniques were to tasks between 1 - 5 (where 1 means Not-Helpful) and 5 means Very-Helpful),Did you have any problem with the Visualization?
+dadaeea,5,2,3,yes
+ajoiaidia odnaneae,3,yes,daomdoape
+cda doiaoie,5,yes,dsfsfsr

@@ -11,5 +11,10 @@ package graphEvaluation;
  * @author Mershack
  */
 public enum GraphTaskEnum {
-    NEIGHBOR, PATH_BOOLEAN, PATH_DIGIT    
+    NEIGHBOR, 
+    PATH_THREE_NODES, 
+    PATH_TWO_NODES,    
+    SIZE_OF_ADJACENT_NODES,
+    MAX_SIZE_OF_ADJACENT_NODES,
+    
 }

@@ -1,0 +1,11 @@
+TurkID,Qn1,Qn2,Qn3,Qn4,Qn5,Qn6,Qn7,Qn8,Qn9,Qn10,Node-Clicking-Used, Mouse-Over-Used, Panning-Used, Zooming-Used,interactive_easenessRating, interactive_helpfulnessRating
+,true,true,true,true,false,false,false,false,false,false,true,true,true,true,3,4
+aeaeae,true,true,true,true,false,false,false,false,false,false,true,true,true,true,5,5
+,true,true,true,true,false,false,false,false,false,false,false,false,false,false,0,0
+adae adawe,true,true,true,true,false,false,false,false,false,false,false,false,false,false,0,0
+daeadae,true,true,true,true,false,false,false,false,false,false,false,false,false,false,0,0
+,false,false,false,false,false,false,false,false,0,0
+,false,false,false,false,false,false,false,false,0,0
+,false,false,false,false,false,false,false,false,0,0
+,false,false,false,false,false,false,false,false,0,0
+dadea,true,true,false,true,false,false,false,false,0,0

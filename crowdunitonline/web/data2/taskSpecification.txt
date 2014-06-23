@@ -1,0 +1,2 @@
+path_three_nodes, 2
+neighbor, 2

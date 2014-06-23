@@ -55,7 +55,7 @@ public class Utils {
             Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
             mac.init(signingKey);
             byte[] rawHmac = mac.doFinal(data.getBytes());
-            signature = new String(Base64.encodeBase64(rawHmac));
+            signature = new String(org.apache.commons.codec.binary.Base64.encodeBase64(rawHmac));
         }
 
         catch (Exception e) {

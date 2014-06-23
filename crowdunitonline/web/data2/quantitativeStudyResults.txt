@@ -1,0 +1,4 @@
+TurkID,Qn1,Qn2,Qn3,Qn4
+dadaeea,true,true,false,true
+ajoiaidia odnaneae,true,true,false,true
+cda doiaoie,true,true,false,true
